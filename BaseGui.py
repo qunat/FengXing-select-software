@@ -208,119 +208,15 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
     def Ceate_show_3d(self, QClor=1, dict={}, start=0, ):#仅更新3D
         #根据combox选项生成产品参数列表
         SelectModule.Ceate_show_3d(self)
-        
+
+
     def Ceate_combox_table(self, ButtonId=None):  # 生成选项卡表格
         '''
         1.建立选型列表名称
         2.获取各个选项的值
         3.
         '''
-        self.ButtonId = ButtonId
-        try:
-            pass
-            # ----------2D显示图片操作 技术资料（1）----------------
-            try:
-                pix_name = ButtonId  # 2D
-                # print(pix_name)
-                self.pix = QPixmap('Pic\\' + pix_name + ".PNG")
-                self.graphicsView = GraphicsView(self.pix, self.tab_8)
-                self.graphicsView.setGeometry(QtCore.QRect(0, 0, 461*self.width_scal, 581*self.height_scal))
-                self.graphicsView.setObjectName("graphicsView")
-                self.graphicsView.scale(0.4, 0.4)  # 显示比例
-                self.item = GraphicsPixmapItem(self.pix)  # 创建像素图元
-                self.scene = QtWidgets.QGraphicsScene()  # 创建场景显示比例
-                self.scene.addItem(self.item)
-            except:
-                pass
-
-            # ----------2D显示图片操作 技术资料（2）----------------
-            try:
-                pix_name = ButtonId  # 2D
-                # print(pix_name)
-                self.pix = QPixmap('Pic\\' + "KS枫信_3" + ".PNG")
-                self.graphicsView = GraphicsView(self.pix, self.tab_3)
-                self.graphicsView.setGeometry(QtCore.QRect(0, 0, 461*self.width_scal, 581*self.height_scal))
-                self.graphicsView.setObjectName("graphicsView")
-                self.graphicsView.scale(0.4, 0.4)  # 显示比例
-                self.item = GraphicsPixmapItem(self.pix)  # 创建像素图元
-                self.scene = QtWidgets.QGraphicsScene()  # 创建场景显示比例
-                self.scene.addItem(self.item)
-            except:
-                pass
-                # ----------2D显示图片操作 技术资料（3）----------------
-            try:
-                pix_name = ButtonId  # 2D
-                # print(pix_name)
-                self.pix = QPixmap('Pic\\' + "KS枫信_4" + ".PNG")
-                self.graphicsView = GraphicsView(self.pix, self.tab_4)
-                self.graphicsView.setGeometry(QtCore.QRect(0, 0, 461*self.width_scal, 581*self.height_scal))
-                self.graphicsView.setObjectName("graphicsView")
-                self.graphicsView.scale(0.4, 0.4)  # 显示比例
-                self.item = GraphicsPixmapItem(self.pix)  # 创建像素图元
-                self.scene = QtWidgets.QGraphicsScene()  # 创建场景显示比例
-                self.scene.addItem(self.item)
-            except:
-                pass
-            # ------------------------------------------------------------
-            if "KS系列(孔输出) " in ButtonId:
-                self.boll_SCcrew = Create_Speed_reducer_ks_axle_output()#建立类
-
-            all_combox_list = self.boll_SCcrew.Create_combox_list()
-            self.order_code_position = len(all_combox_list) - 1  # 订购吗的位置
-            self.tableWidget_2.setRowCount(len(all_combox_list))  # 参数表格设置.
-            self.combox_list = []
-            blank_size=self.tableWidget_2.geometry().width()/3
-            self.tableWidget_2.setColumnWidth(1, blank_size)  # 手动设置列宽
-            self.tableWidget_2.setColumnWidth(0, blank_size)  # 手动设置列宽
-            self.tableWidget_2.setColumnWidth(2, blank_size)  # 手动设置列宽
-
-            # ------------------------------------------------先生成combox选项卡
-            for i in all_combox_list:  # 遍历生成所有的选项
-                comBox = QComboBox()
-                comBox.setFont(QFont("微软雅黑", 9, QFont.Black))
-                comBox.setStyleSheet("QComboBox{color:rgb(0,0,0)}")
-                self.combox_list.append(comBox)
-                # comBox.setBackground(QtGui.QBrush(QtGui.QColor(240, 255, 191)))  # 设置背景颜色
-                if type(i).__name__ == "dict":  # 如果室字典类型则生成combox
-                    for key, value in i.items():
-                        newItem = QtWidgets.QTableWidgetItem(str(key))
-                        newItem.setTextAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignCenter)
-                        newItem.setBackground(QtGui.QBrush(QtGui.QColor(240, 255, 191)))  # 设置背景颜色
-                        newItem.setFont(QFont("微软雅黑", 9, QFont.Black))  # 设置字体
-                        newItem.setForeground(QBrush(QtGui.QColor(0, 0, 0)))
-                        self.tableWidget_2.setItem(all_combox_list.index(i), 0, newItem)  # 代码
-                        for k in value:
-                            self.combox_list[all_combox_list.index(i)].addItem(k)
-                    self.tableWidget_2.setCellWidget(all_combox_list.index(i), 1,
-                                                     self.combox_list[all_combox_list.index(i)])
-                    comBox.destroy()
-                else:  # f否则生成普通单元格
-                    pass
-                    newItem = QtWidgets.QTableWidgetItem(str(i[0]))
-                    newItem.setTextAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignCenter)
-                    newItem.setBackground(QtGui.QBrush(QtGui.QColor(240, 255, 191)))  # 设置背景颜色
-                    newItem.setFont(QFont("微软雅黑", 9, QFont.Black))
-                    newItem.setForeground(QBrush(QtGui.QColor(0, 0, 0)))
-                    self.tableWidget_2.setItem(all_combox_list.index(i), 0, newItem)  # 代码
-                    # ------------------------------------------------------------------------
-                    newItem = QtWidgets.QTableWidgetItem(str(i[1]))
-                    newItem.setTextAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignCenter)
-                    newItem.setBackground(QtGui.QBrush(QtGui.QColor(240, 255, 191)))  # 设置背景颜色
-                    newItem.setFont(QFont("微软雅黑", 9, QFont.Black))
-                    newItem.setForeground(QBrush(QtGui.QColor(0, 0, 0)))
-                    self.tableWidget_2.setItem(all_combox_list.index(i), 1, newItem)  # 代码
-                # 设置备注单元格的颜色
-                newItem = QtWidgets.QTableWidgetItem(str(""))
-                newItem.setTextAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignCenter)
-                newItem.setBackground(QtGui.QBrush(QtGui.QColor(240, 255, 191)))  # 设置背景颜色
-                # newItem.setFont(QFont("song", 9,QFont.Black))
-                self.tableWidget_2.setItem(all_combox_list.index(i), 2, newItem)  # 代码
-
-            # ----------------------------------------------------生成产品参数的tablewidget
-
-        except:
-
-            pass
+        SelectModule.Ceate_combox_table(self=self,ButtonId=ButtonId)
 
     def choose(self):
         if self.stackedWidget.currentIndex() == 1:
