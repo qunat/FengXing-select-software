@@ -91,7 +91,7 @@ class Ui_MainWindow(MainGui.Ui_MainWindow):
         X=self.width_scal
         Y=self.height_scal
         #自动调整大小
-        self.canva.setGeometry(QtCore.QRect(0, 0, 468 * X, 581 * Y))
+        self.canva.setGeometry(QtCore.QRect(0, 0, 468 * X, (581-ribbin_offset_Y) * Y))
 
         x=self.stackedWidget.geometry().x()*X
         y=self.stackedWidget.geometry().y()*Y
