@@ -3,22 +3,19 @@
 
 import logging
 import time
+from functools import partial
+
 from OCC.Core.BRep import BRep_Tool
 from OCC.Core.Geom import Geom_Circle
 from OCC.Display.OCCViewer import OffscreenRenderer
 from OCC.Display.backend import load_backend, get_qt_modules
 from PyQt5 import QtCore, QtWidgets, Qt
-from graphics import GraphicsView, GraphicsPixmapItem
-from module import Process_message, Process_message_word,SelectModule
+from module import  Process_message_word,SelectModule,FuctionModule
 from module.CreateParameter import *
 from OCC.Extend.TopologyUtils import TopologyExplorer
-from OCC.Extend.DataExchange import read_step_file_with_names_colors
-from OCC.Core.Quantity import Quantity_Color, Quantity_TOC_RGB
-import re,copy
 from PyQt5.QtCore import QObject, pyqtSignal, QCoreApplication, QUrl
 from OCC.Core.AIS import AIS_Shape, AIS_RadiusDimension, AIS_AngleDimension, AIS_LengthDimension
-from OCC.Core.TopAbs import (TopAbs_FACE, TopAbs_EDGE, TopAbs_VERTEX,
-                             TopAbs_SHELL, TopAbs_SOLID)
+from ui import MainGui
 
 # ------------------------------------------------------------开始初始化环境
 log = logging.getLogger(__name__)
@@ -60,13 +57,11 @@ QtCore, QtGui, QtWidgets, QtOpenGL = get_qt_modules()
 from OCC.Core.TopoDS import TopoDS_Shape, TopoDS_Builder, TopoDS_Compound, topods_CompSolid, TopoDS_Edge, TopoDS_Face,\
 TopoDS_Vertex
 
-from OCC.Extend.DataExchange import read_iges_file, read_step_file, read_stl_file, write_step_file, write_stl_file, \
-    write_iges_file
 from PyQt5.QtWidgets import QComboBox, QPushButton, QHBoxLayout, QMdiArea, QMdiSubWindow, QTextEdit, QApplication, \
     QFileDialog, QProgressBar, QMessageBox, QTableView, QDockWidget, QListWidget
 import sys
 import webbrowser
-from  module import Ftp_Update, Upyun_Update, Vision, AboutDownload,MainGui, ShowGui,ProcessBar
+from  module import Upyun_Update, Vision, AboutDownload,ShowGui,ProcessBar
 import  threading
 import os, shutil
 from multiprocessing import Process, Queue
@@ -99,7 +94,7 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         self.vision = "1.0.1"
         self.measure_signale = 0  # 测量类型的型号
         self.process_bar = Process_Bar()
-        self.process_message = Process_message()
+        self.process_message = SelectModule.Process_message()
         self.process_message_word = Process_message_word()
         self.new_vison = Vision()
         self.new_AboutDownload = AboutDownload()
@@ -107,9 +102,6 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         # ----------------------------------------------------------------------------------
         self.sinal = 0
         self.tabWidget_5.currentChanged['int'].connect(self.Refresh)  # 切换时刷新
-        self.Out_put_stp.triggered.connect(self.Output_stp_data)
-        self.Out_put_iges.triggered.connect(self.Output_iges_data)
-        self.Out_put_stl.triggered.connect(self.Output_stl_data)
         # -----------------------------------------------------------------------------------采购下单
         self.Put_order.triggered.connect(self.Put_order_fun)
         self.Up_data.triggered.connect(self.UP_date_software)
@@ -142,8 +134,8 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         except:
             pass
         # -------------------------------------------------------------------------------------测量菜单
-        self.Measure_distance.triggered.connect(self.Measure_distance_fun)
-        self.Measure_diameter.triggered.connect(self.Measure_diameter_fun)
+        self.Measure_distance.triggered.connect(partial(FuctionModule.Measure_distance_fun,self))
+        self.Measure_diameter.triggered.connect(partial(FuctionModule.Measure_diameter_fun,self))
         # -------------------------------------------------------------------------------------自定义信号和槽
         Measure_distance_signal = pyqtSignal()
         Measure_diameter_signal = pyqtSignal()
@@ -193,7 +185,6 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
 
     def Show_gui(self, index=0):
         self.stackedWidget.setCurrentIndex(index)
-        # self.stackedWidget.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.statusbar.showMessage("状态：软件运行正常")
 
     def Show_gui_text(self, index=0):
@@ -208,20 +199,12 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
     def Ceate_show_3d(self, QClor=1, dict={}, start=0, ):#仅更新3D
         #根据combox选项生成产品参数列表
         SelectModule.Ceate_show_3d(self)
-
-
     def Ceate_combox_table(self, ButtonId=None):  # 生成选项卡表格
         '''
         1.建立选型列表名称
         2.获取各个选项的值
-        3.
         '''
         SelectModule.Ceate_combox_table(self=self,ButtonId=ButtonId)
-
-    def choose(self):
-        if self.stackedWidget.currentIndex() == 1:
-            pass
-
     def show_parameter(self, filepath=None):  # 切换到参数画面
         self.stackedWidget.setCurrentIndex(0)
         self.tab_7.show()
@@ -229,165 +212,10 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         self.canva._display.Repaint()
 
     def Create_ProcessBar(self, ButtonId=None):  # 过程处理函数 获取数据生成所需的界面
-        try:
-            # -----------------清空3D显示界面
-            self.statusbar.showMessage("状态：软件运行正常")
-            self.canva._display.EraseAll()
-            self.canva._display.hide_triedron()
-            self.canva._display.display_triedron()
-            self.canva._display.Repaint()
-            # ------------------------------
-            self.message = Process_message()  #
-            self.tableWidget_2.clear()  # 清空原来的数据
-            self.tableWidget_2.clearSpans()
-
-            self.tableWidget_2.setHorizontalHeaderLabels(['选项', '列表值', '备注'])
-            textFont = QFont()
-            textFont.setFamily("微软雅黑")
-            textFont.setPointSize(11)
-            self.tableWidget_2.setEditTriggers(QTableView.NoEditTriggers)  # 不可编辑  # 表格不可编辑
-            # 选型
-            headItem = self.tableWidget_2.horizontalHeaderItem(0)  # 获得水平方向表头的Item对象
-            headItem.setFont(textFont)  # 设置字体
-            brush = QtGui.QBrush(QtGui.QColor(85, 85, 255))
-            headItem.setForeground(brush)  # 设置文字颜色
-            # 列表值
-            headItem = self.tableWidget_2.horizontalHeaderItem(1)  # 获得水平方向表头的Item对象
-            headItem.setFont(textFont)  # 设置字体
-            brush = QtGui.QBrush(QtGui.QColor(255, 170, 0))
-            headItem.setForeground(brush)  # 设置文字颜色
-            # 备注
-            headItem = self.tableWidget_2.horizontalHeaderItem(2)  # 获得水平方向表头的Item对象
-            headItem.setFont(textFont)  # 设置字体
-            brush = QtGui.QBrush(QtGui.QColor(255, 0, 127))
-            headItem.setForeground(brush)  # 设置文字颜色
-            if "KS系列(孔输出) " in ButtonId :
-                self.ButtonId = ButtonId
-                self.Ceate_combox_table(ButtonId)#建立
-                # 将所有的combox 选项和型号槽绑定 只要选项更新就会选项产品参数
-                for i in self.combox_list:
-                    if self.combox_list.index(i)==7:
-                        i.currentTextChanged.connect(self.Ceate_show_3d)#刷新
-                        continue
-                    i.currentTextChanged.connect(self.Ceate_product_parameter_table_and_show_3d)#刷新
-            self.sinal = 1
-            self.message.process_message_show()
-        except Exception as e:
-            print(e)
-
-        if True:
-            if self.sinal == 1:
-                try:
-                    pass
-                except:
-                    pass
-                self.show_parameter()
-                self.sinal = 0
-                self.message.close()
-                # break
+        SelectModule.Create_ProcessBar(self=self,ButtonId=ButtonId)
 
     def Show3D(self, mode=0, file=None, aCompound=None):  # 生成3D mode控制显示模式
-        try:
-            self.canva._display.EraseAll()
-            self.canva._display.hide_triedron()
-            self.canva._display.display_triedron()
-            self.canva._display.Repaint()
-            if mode == 0:
-                shapes_labels_colors = read_step_file_with_names_colors(file)
-                self.statusbar.showMessage("数据生成中请梢后......")
-                self.aCompound=shapes_labels_colors
-                for shpt_lbl_color in shapes_labels_colors:
-                    label, c = shapes_labels_colors[shpt_lbl_color]
-                    for e in TopologyExplorer(shpt_lbl_color).solids():
-                        pass
-                        self.canva._display.DisplayColoredShape(e, color=Quantity_Color(c.Red(),
-                                                                                        c.Green(),
-                                                                                        c.Blue(),
-                                                                                        Quantity_TOC_RGB))
-            elif mode == 1:
-
-                self.show = self.canva._display.DisplayColoredShape(aCompound, color="WHITE", update=True)
-
-        except:
-            pass
-            self.statusbar.showMessage("没有此零件")
-
-    def Translation_Assemble(self):  # 转换为装配体
-        pass
-        try:
-            self.new_build = TopoDS_Builder()  # 建立一个TopoDS_Builder()
-            self.New_Compound = TopoDS_Compound()  # 定义一个复合体
-            self.new_build.MakeCompound(self.New_Compound)  # 生成一个复合体DopoDS_shape
-            for shape in self.aCompound:
-                self.new_build.Add(self.New_Compound, shape)
-            self.aCompound = self.New_Compound
-        except:
-            pass
-
-    def Assemble_Rename(self):
-        try:
-            Part_NO = 0
-            with open(self.save_part_path, "r") as f:
-                words = f.read()
-                f.close()
-            p = re.compile(r"Open CASCADE STEP translator 7.4 1.\d{1,2}")  # h获取子装配体名称
-            assemble_part_name_list = p.findall(words)
-            for i in range(0, (len(assemble_part_name_list)), 2):
-                pass
-                new_name = self.filename + "-" + str(Part_NO)
-                words = words.replace(assemble_part_name_list[i], new_name)
-                Part_NO += 1
-            with open(self.save_part_path, "w+") as f:  # 重新写入stp
-                f.write(words)
-                f.close()
-                # print("succeed")
-
-
-        except:
-            pass
-
-    def Output_stp_data(self):  # 将数据转换成stp并导出
-        try:
-            pass
-            self.Translation_Assemble()
-            path = "../" + self.filename
-            fileName, ok = QFileDialog.getSaveFileName(self, "文件保存", path, "All Files (*) (*.step)")
-            write_step_file(self.aCompound, fileName)
-            self.save_part_path = fileName
-            self.Assemble_Rename()
-            self.statusbar.showMessage("零件导出成功")
-
-        except:
-            pass
-            self.statusbar.showMessage("错误：没用模型可以导出")
-
-    def Output_iges_data(self):  # 将数据转换成iges并导出
-        try:
-            pass
-            self.Translation_Assemble()
-            path = "./" + self.filename
-            fileName, ok = QFileDialog.getSaveFileName(self, "文件保存", path, "All Files (*) (*.iges)")
-            write_iges_file(self.aCompound, fileName)
-            self.save_part_path = fileName
-            self.statusbar.showMessage("零件导出成功")
-
-        except:
-            pass
-            self.statusBar.showMessage('错误：没用模型可以导出')
-
-    def Output_stl_data(self):  # stl
-        try:
-            pass
-            self.Translation_Assemble()
-            path = "./" + self.filename
-            fileName, ok = QFileDialog.getSaveFileName(self, "文件保存", path, "All Files (*) (*.iges)")
-            write_stl_file(self.aCompound, fileName)
-            self.save_part_path = fileName
-            self.statusbar.showMessage("零件导出成功")
-
-        except:
-            pass
-            self.statusBar.showMessage('错误：没用模型可以导出')
+        SelectModule.Show3D(self=self,mode=0, file=None, aCompound=None)
 
     def centerOnScreen(self):
         '''Centers the window on the screen.'''
@@ -396,25 +224,7 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         y = (resolution.height() - self.frameSize().height()) / 2
         self.move(x, y)
 
-    def Measure_distance_fun(self):
-        pass
-        self.measure_signale = 1  # 测量长度
-        self.measure_shape_list = []
-        self.canva._display.SetSelectionModeNeutral()
-        self.canva._display.SetSelectionMode(TopAbs_FACE)  # 设置选择模式
-        self.canva._display.SetSelectionMode(TopAbs_EDGE)  # 设置选择模式
-        self.canva._display.SetSelectionMode(TopAbs_VERTEX) # 设置选择模式
-        self.statusbar.showMessage("请选择要测量距离的两个面或者两条边")
 
-    def Measure_diameter_fun(self):
-        pass
-        self.measure_signale = 2  # 测量直径
-        self.measure_shape_list = []
-        self.canva._display.SetSelectionModeNeutral()
-        self.canva._display.SetSelectionMode(TopAbs_FACE)  # 设置选择模式
-        self.canva._display.SetSelectionMode(TopAbs_EDGE)  # 设置选择模式
-        self.statusbar.showMessage("请选择圆弧或者圆弧面")
-        # print("选择面")
     def line_clicked(self, shp, *kwargs):
         """ This function is called whenever
         """
@@ -542,8 +352,8 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
                 rightMenu.addAction(self.actionreboot)
                 rightMenu.addAction(self.actionreboot_1)
 
-                self.actionreboot.triggered.connect(self.Measure_distance_fun)
-                self.actionreboot_1.triggered.connect(self.Measure_diameter_fun)
+                self.actionreboot.triggered.connect(partial(FuctionModule.Measure_distance_fun,self))
+                self.actionreboot_1.triggered.connect(partial(FuctionModule.Measure_diameter_fun,self))
 
                 rightMenu.exec_(QtGui.QCursor.pos())
 
@@ -643,20 +453,7 @@ class AboutDownload(QtWidgets.QMainWindow, AboutDownload.Ui_Form):
         self.setupUi(self)
 
 
-class Process_message(QtWidgets.QMainWindow, Process_message.Ui_Form):  # 零件加载过程界面
-    def __init__(self, parent=None):
-        super(Process_message, self).__init__(parent)
-        self.setupUi(self)
-        # self.pushButton=QtWidgets.QPushButton()
-        # self.pushButton.setGeometry(0,0,10,10)
 
-    def process_message_show(self):
-        pass
-        self.label.setObjectName("label")
-        self.gif = QMovie(':/picture/icons/loading.gif')
-        self.label.setMovie(self.gif)
-        self.gif.start()
-        self.show()
 
 
 class Process_message_word(QtWidgets.QMainWindow, Process_message_word.Ui_Form):  # 零件加载过程界面

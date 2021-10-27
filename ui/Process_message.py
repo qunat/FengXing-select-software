@@ -9,6 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtGui import QMovie
 
 
 class Ui_Form(object):
@@ -18,7 +19,7 @@ class Ui_Form(object):
         self.label = QtWidgets.QLabel(Form)
         self.label.setGeometry(QtCore.QRect(10, 10, 131, 131))
         self.label.setText("")
-        self.label.setObjectName("label")
+
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)

@@ -1,11 +1,32 @@
 #coding=utf-8
+from OCC.Core.Quantity import Quantity_Color, Quantity_TOC_RGB
 from OCC.Core.TopoDS import TopoDS_Compound
-from PyQt5.QtWidgets import QApplication, QComboBox
+from OCC.Extend.DataExchange import read_step_file_with_names_colors
+from OCC.Extend.TopologyUtils import TopologyExplorer
+from PyQt5.QtWidgets import QApplication, QComboBox, QTableView
 from PyQt5 import QtWidgets,QtGui,QtCore
-from PyQt5.QtGui import QFont, QBrush, QPixmap
+from PyQt5.QtGui import QFont, QBrush, QPixmap, QMovie
 from graphics import GraphicsView, GraphicsPixmapItem
 from module.CreateParameter import *
 import copy
+from ui import Process_message
+from module import source
+
+
+class Process_message(QtWidgets.QMainWindow, Process_message.Ui_Form):  # 零件加载过程界面
+    def __init__(self, parent=None):
+        super(Process_message, self).__init__(parent)
+        self.setupUi(self)
+        # self.pushButton=QtWidgets.QPushButton()
+        # self.pushButton.setGeometry(0,0,10,10)
+
+    def process_message_show(self):
+        pass
+        self.label.setObjectName("label")
+        self.gif = QMovie(':/picture/icons/loading.gif')
+        self.label.setMovie(self.gif)
+        self.gif.start()
+        self.show()
 
 def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0, ):  # 生成/更新产品参数表格
     '''
@@ -24,7 +45,6 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0, 
             continue
         self.combox_current_text_list.append(i.currentText())  # 装有combox的列表
     try:
-
         if self.ButtonId in ["KS系列(孔输出) "]:
             self.combox_list[7].clear()  # 清楚原来的combobox选项
             series = self.combox_current_text_list[0]  # 机座号
@@ -112,7 +132,8 @@ def Ceate_show_3d(self, QClor=1, dict={}, start=0, ):#仅更新3D
                     filenam = self.filename_dict[self.combox_list[7].currentText()]
                     #filenam=filenam.replace(".step","")
                     #self.aCompound = self.boll_SCcrew.Create_shape(filename=filenam)
-                    self.Show3D(mode=0,file=filenam)
+                    filenam=filenam.replace(".\\","")
+                    Show3D(self=self,mode=0,file=filenam)
                     self.canva._display.Repaint()
                     self.filename=filenam
                     self.statusbar.showMessage("数据生成成功")
@@ -235,3 +256,90 @@ def Ceate_combox_table(self, ButtonId=None):  # 生成选项卡表格
         except:
 
             pass
+
+def Create_ProcessBar(self, ButtonId=None):  # 过程处理函数 获取数据生成所需的界面
+        try:
+            # -----------------清空3D显示界面
+            self.statusbar.showMessage("状态：软件运行正常")
+            self.canva._display.EraseAll()
+            self.canva._display.hide_triedron()
+            self.canva._display.display_triedron()
+            self.canva._display.Repaint()
+            # ------------------------------
+            self.message = Process_message()  #
+            self.tableWidget_2.clear()  # 清空原来的数据
+            self.tableWidget_2.clearSpans()
+
+            self.tableWidget_2.setHorizontalHeaderLabels(['选项', '列表值', '备注'])
+            textFont = QFont()
+            textFont.setFamily("微软雅黑")
+            textFont.setPointSize(11)
+            self.tableWidget_2.setEditTriggers(QTableView.NoEditTriggers)  # 不可编辑  # 表格不可编辑
+            # 选型
+            headItem = self.tableWidget_2.horizontalHeaderItem(0)  # 获得水平方向表头的Item对象
+            headItem.setFont(textFont)  # 设置字体
+            brush = QtGui.QBrush(QtGui.QColor(85, 85, 255))
+            headItem.setForeground(brush)  # 设置文字颜色
+            # 列表值
+            headItem = self.tableWidget_2.horizontalHeaderItem(1)  # 获得水平方向表头的Item对象
+            headItem.setFont(textFont)  # 设置字体
+            brush = QtGui.QBrush(QtGui.QColor(255, 170, 0))
+            headItem.setForeground(brush)  # 设置文字颜色
+            # 备注
+            headItem = self.tableWidget_2.horizontalHeaderItem(2)  # 获得水平方向表头的Item对象
+            headItem.setFont(textFont)  # 设置字体
+            brush = QtGui.QBrush(QtGui.QColor(255, 0, 127))
+            headItem.setForeground(brush)  # 设置文字颜色
+            if "KS系列(孔输出) " in ButtonId :
+                self.ButtonId = ButtonId
+                self.Ceate_combox_table(ButtonId)#建立
+                # 将所有的combox 选项和型号槽绑定 只要选项更新就会选项产品参数
+                for i in self.combox_list:
+                    if self.combox_list.index(i)==7:
+                        i.currentTextChanged.connect(self.Ceate_show_3d)#刷新
+                        continue
+                    i.currentTextChanged.connect(self.Ceate_product_parameter_table_and_show_3d)#刷新
+            self.sinal = 1
+            self.message.process_message_show()
+        except Exception as e:
+            print(e)
+
+        if True:
+            if self.sinal == 1:
+                try:
+                    pass
+                except:
+                    pass
+                self.show_parameter()
+                self.sinal = 0
+                self.message.close()
+                # break
+
+def Show3D(self, mode=0, file=None, aCompound=None):  # 生成3D mode控制显示模式
+        try:
+            self.canva._display.EraseAll()
+            self.canva._display.hide_triedron()
+            self.canva._display.display_triedron()
+            self.canva._display.Repaint()
+            if mode == 0:
+                file=os.path.join(os.getcwd(),file)
+                print(file)
+                shapes_labels_colors = read_step_file_with_names_colors(file)
+                self.statusbar.showMessage("数据生成中请梢后......")
+                self.aCompound=shapes_labels_colors
+                for shpt_lbl_color in shapes_labels_colors:
+                    label, c = shapes_labels_colors[shpt_lbl_color]
+                    for e in TopologyExplorer(shpt_lbl_color).solids():
+                        pass
+                        self.canva._display.DisplayColoredShape(e, color=Quantity_Color(c.Red(),
+                                                                                        c.Green(),
+                                                                                        c.Blue(),
+                                                                                        Quantity_TOC_RGB))
+            elif mode == 1:
+
+                self.show = self.canva._display.DisplayColoredShape(aCompound, color="WHITE", update=True)
+
+        except Exception as e:
+            pass
+            print(e)
+            self.statusbar.showMessage("没有此零件")

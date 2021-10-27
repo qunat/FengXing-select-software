@@ -197,6 +197,4 @@ class Create_Speed_reducer_ks_axle_output(object):
                 ls_kind = i.split("\\")[-1]
                 ls_kind =ls_kind.split("-")[0]
             self.path_dict[ls_kind]=j
-class Gui_Select_Process(object):
-    def __init__(self):
-        pass
+
