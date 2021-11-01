@@ -228,7 +228,7 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
     def line_clicked(self, shp, *kwargs):
         """ This function is called whenever
         """
-        print("666666666")
+
         FuctionModule.Measure_funtion(self=self,shp=shp)
     def rightMenuShow(self):
         try:
