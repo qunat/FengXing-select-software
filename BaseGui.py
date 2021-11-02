@@ -60,11 +60,8 @@ TopoDS_Vertex
 from PyQt5.QtWidgets import QComboBox, QPushButton, QHBoxLayout, QMdiArea, QMdiSubWindow, QTextEdit, QApplication, \
     QFileDialog, QProgressBar, QMessageBox, QTableView, QDockWidget, QListWidget
 import sys
-import webbrowser
 from  module import Upyun_Update, Vision, AboutDownload,ShowGui,ProcessBar
-import  threading
-import os, shutil
-from multiprocessing import Process, Queue
+
 
 Stylesheet = """
 #MainWindow {
@@ -103,8 +100,8 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         self.sinal = 0
         self.tabWidget_5.currentChanged['int'].connect(self.Refresh)  # 切换时刷新
         # -----------------------------------------------------------------------------------采购下单
-        self.Put_order.triggered.connect(self.Put_order_fun)
-        self.Up_data.triggered.connect(self.UP_date_software)
+        #self.Put_order.triggered.connect(self.Put_order_fun)
+        #self.Up_data.triggered.connect(self.UP_date_software)
         # -------------------------------------------------------------------------------------视图操作
         self.Quit.triggered.connect(self.Quit_)
 
@@ -233,38 +230,7 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         except:
             self.statusbar.showMessage("浏览器打开失败")
 
-    def UP_date_software(self, mode=1):  # mode=1 为GUI模式下载  mode=2 则为控制台模式下载
-        pass
-        mode = 1
-        if mode == 1:
-            self.process_bar.show()
-            try:
-                ftp_serve = Upyun_Update.Ftp_Update()
-                all_document_num = ftp_serve.get_download_document_num()
-                ftp_serve.Delete_Document("./debug")  # 清楚所有原先文件
-                os.mkdir("./debug")  # 新建debug文件夹
-            except Exception as e:
-                pass
-            try:
-                complete_downloadt_list = []  # 已经完成下载的文件列表
-                download_speed_list = []
-                t1 = threading.Thread(target=ftp_serve.Check_dir, args=(complete_downloadt_list, download_speed_list,))
-                t1.start()
-                t2 = threading.Thread(target=self.process_bar.process_bar_show,
-                                      args=(complete_downloadt_list, all_document_num, download_speed_list,))
-                t2.start()
 
-            except:
-                pass
-                self.statusbar.showMessage("下载错误，请重新下载")
-        if mode == 2:
-            try:
-
-                p1 = Process(target=os.system, args=("Upyun_Update.exe",))  # 必须加,号
-                p1.start()
-                pass
-            except:
-                self.statusbar.showMessage("下载错误，请重新下载")
 
     def get_now_vision(self):
         ftp_serve = Upyun_Update.Ftp_Update()

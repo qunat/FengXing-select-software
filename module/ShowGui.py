@@ -564,21 +564,29 @@ class Ui_MainWindow(MainGui.Ui_MainWindow):
     def init_ribbon(self):
         #------文件选项----------------------------------
         home_tab = self._ribbon.add_ribbon_tab("文件")#table 选项
-        file_pane = home_tab.add_ribbon_pane("File")#选项下的菜单
+        file_pane = home_tab.add_ribbon_pane("文件")#选项下的菜单
         file_pane.add_ribbon_widget(RibbonButton(self, self._open_action, True))
         file_pane.add_ribbon_widget(RibbonButton(self, self._save_action, True))
 
-        edit_panel = home_tab.add_ribbon_pane("Edit")#选项下的菜单
-        edit_panel.add_ribbon_widget(RibbonButton(self, self._copy_action, True))
-        edit_panel.add_ribbon_widget(RibbonButton(self, self._paste_action, True))
+        down_load_panel = home_tab.add_ribbon_pane("下载更新")#选项下的菜单
+        down_load_panel.add_ribbon_widget(RibbonButton(self, self._copy_action, True))
+        down_load_panel.add_ribbon_widget(RibbonButton(self, self._paste_action, True))
 
-        grid = edit_panel.add_grid_widget(200)#选项下的菜单
-        grid.addWidget(QLabel("Text box 1"), 1, 1)
-        grid.addWidget(QLabel("Text box 2"), 2, 1)
-        grid.addWidget(QLabel("Text box 3"), 3, 1)
-        grid.addWidget(self._text_box1, 1, 2)
-        grid.addWidget(self._text_box2, 2, 2)
-        grid.addWidget(self._text_box3, 3, 2)
+        Purchase_order = home_tab.add_ribbon_pane("采购下单")  # 选项下的菜单
+        Purchase_order.add_ribbon_widget(RibbonButton(self, self._copy_action, True))
+        Purchase_order.add_ribbon_widget(RibbonButton(self, self._paste_action, True))
+
+        about_software = home_tab.add_ribbon_pane("关于软件")  # 选项下的菜单
+        about_software.add_ribbon_widget(RibbonButton(self, self._copy_action, True))
+        about_software.add_ribbon_widget(RibbonButton(self, self._paste_action, True))
+
+        #grid = edit_panel.add_grid_widget(200)#选项下的菜单
+        #grid.addWidget(QLabel("Text box 1"), 1, 1)
+        #grid.addWidget(QLabel("Text box 2"), 2, 1)
+        #grid.addWidget(QLabel("Text box 3"), 3, 1)
+        #grid.addWidget(self._text_box1, 1, 2)
+        #grid.addWidget(self._text_box2, 2, 2)
+        #grid.addWidget(self._text_box3, 3, 2)
 
         # ------View选项----------------------------------
         #view_panel = home_tab.add_ribbon_pane("View")#选项下的菜单

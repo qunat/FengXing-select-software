@@ -9,6 +9,11 @@ from OCC.Extend.DataExchange import write_step_file, write_iges_file, write_stl_
 from OCC.Extend.TopologyUtils import TopologyExplorer
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
 import re
+import  threading
+import os, shutil
+from multiprocessing import Process, Queue
+from module import Upyun_Update
+import webbrowser
 
 
 def Translation_Assemble(self):  # 转换为装配体
@@ -214,3 +219,43 @@ def Measure_funtion(self,shp,*args):
                     self.measure_shape_list.clear()
     except:
         pass
+def Put_order_fun(self):
+        try:
+            sys.path.append("libs")
+            self.url = 'http://www.fxjiansuji.com/'
+            webbrowser.open(self.url)
+        except:
+            self.statusbar.showMessage("浏览器打开失败")
+
+def UP_date_software(self, mode=1):  # mode=1 为GUI模式下载  mode=2 则为控制台模式下载
+        pass
+        mode = 1
+        if mode == 1:
+            self.process_bar.show()
+            try:
+                ftp_serve = Upyun_Update.Ftp_Update()
+                all_document_num = ftp_serve.get_download_document_num()
+                ftp_serve.Delete_Document("./debug")  # 清楚所有原先文件
+                os.mkdir("./debug")  # 新建debug文件夹
+            except Exception as e:
+                pass
+            try:
+                complete_downloadt_list = []  # 已经完成下载的文件列表
+                download_speed_list = []
+                t1 = threading.Thread(target=ftp_serve.Check_dir, args=(complete_downloadt_list, download_speed_list,))
+                t1.start()
+                t2 = threading.Thread(target=self.process_bar.process_bar_show,
+                                      args=(complete_downloadt_list, all_document_num, download_speed_list,))
+                t2.start()
+
+            except:
+                pass
+                self.statusbar.showMessage("下载错误，请重新下载")
+        if mode == 2:
+            try:
+
+                p1 = Process(target=os.system, args=("Upyun_Update.exe",))  # 必须加,号
+                p1.start()
+                pass
+            except:
+                self.statusbar.showMessage("下载错误，请重新下载")
