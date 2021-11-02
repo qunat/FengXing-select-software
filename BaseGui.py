@@ -107,13 +107,7 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         self.Up_data.triggered.connect(self.UP_date_software)
         # -------------------------------------------------------------------------------------视图操作
         self.Quit.triggered.connect(self.Quit_)
-        self.actionView_Right.triggered.connect(self.View_Right)
-        self.actionView_Left.triggered.connect(self.View_Left)
-        self.actionView_Top.triggered.connect(self.View_Top)
-        self.actionView_Bottom.triggered.connect(self.View_Bottom)
-        self.actionView_Front.triggered.connect(self.View_Front)
-        self.actionView_Iso.triggered.connect(self.View_Iso)
-        self.action_Fitall.triggered.connect(self.View_fitall)
+
 
         #-------------------------------------------------------------------------------------右键单击菜单
         self.menuBar = QtWidgets.QMenuBar()
@@ -143,33 +137,7 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         self.AboutVision.triggered.connect(self.Vision)
         self.AboutDownload.triggered.connect(self.AboutDownload_)
 
-    def View_Bottom(self):
-        pass
-        self.canva._display.View_Bottom()
 
-    def View_Front(self):
-        pass
-        self.canva._display.View_Front()
-
-    def View_Iso(self):
-        pass
-        self.canva._display.View_Iso()
-
-    def View_Left(self):
-        pass
-        self.canva._display.View_Left()
-
-    def View_Right(self):
-        pass
-        self.canva._display.View_Right()
-
-    def View_Top(self):
-        pass
-        self.canva._display.View_Top()
-
-    def View_fitall(self):
-        pass
-        self.canva._display.FitAll()
 
     def doubleClickedHandle(self, index):
         text = self.model().item(index.row(), 0).text()

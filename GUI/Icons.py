@@ -26,6 +26,16 @@ class Icons(object):
         self.make_icon("about", "icons/about.png")
         self.make_icon("license", "icons/license.png")
         self.make_icon("default", "icons/folder.png")
+        self.make_icon("view-right", "icons/view-right.png")
+        self.make_icon("view-left", "icons/view-left.png")
+        self.make_icon("view-bottom", "icons/view-bottom.png")
+        self.make_icon("view-top", "icons/view-top.png")
+        self.make_icon("view-front", "icons/view-front.png")
+        self.make_icon("view-rear", "icons/view-rear.png")
+        self.make_icon("zoom-all", "icons/zoom-all.png")
+        self.make_icon("view-isometric", "icons/view-isometric.png")
+        self.make_icon("Std_Export", "icons/Std_Export.png")
+        self.make_icon("view-measurement", "icons/view-measurement.png")
 
     def make_icon(self, name, path):
         icon = QIcon()

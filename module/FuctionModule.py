@@ -50,7 +50,7 @@ def Assemble_Rename(self):
 def Output_stp_data(self):  # 将数据转换成stp并导出
     try:
         pass
-        self.Translation_Assemble()
+        self.Translation_Assemble(self=self)
         path = "../" + self.filename
         fileName, ok = QFileDialog.getSaveFileName(self, "文件保存", path, "All Files (*) (*.step)")
         write_step_file(self.aCompound, fileName)
@@ -66,7 +66,7 @@ def Output_stp_data(self):  # 将数据转换成stp并导出
 def Output_iges_data(self):  # 将数据转换成iges并导出
     try:
         pass
-        self.Translation_Assemble()
+        self.Translation_Assemble(self=self)
         path = "./" + self.filename
         fileName, ok = QFileDialog.getSaveFileName(self, "文件保存", path, "All Files (*) (*.iges)")
         write_iges_file(self.aCompound, fileName)
@@ -81,7 +81,7 @@ def Output_iges_data(self):  # 将数据转换成iges并导出
 def Output_stl_data(self):  # stl
     try:
         pass
-        self.Translation_Assemble()
+        self.Translation_Assemble(self=self)
         path = "./" + self.filename
         fileName, ok = QFileDialog.getSaveFileName(self, "文件保存", path, "All Files (*) (*.iges)")
         write_stl_file(self.aCompound, fileName)

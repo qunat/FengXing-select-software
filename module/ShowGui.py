@@ -24,6 +24,7 @@ from functools import partial
 from graphics import GraphicsView, GraphicsPixmapItem
 from PyQt5.QtCore import  Qt
 from GUI.RibbonWidget import *
+from module.FuctionModule import *
 
 
 class Ui_MainWindow(MainGui.Ui_MainWindow):
@@ -50,6 +51,19 @@ class Ui_MainWindow(MainGui.Ui_MainWindow):
         self._zoom_action = self.add_action("Zoom", "zoom", "Zoom in on document", True, self.on_zoom)
         self._about_action = self.add_action("About", "about", "About QupyRibbon", True, self.on_about)
         self._license_action = self.add_action("License", "license", "Licence for this software", True, self.on_license)
+        self.actionView_Right= self.add_action("右视图","view-right","右视图",True,self.View_Right)
+        self.actionView_Left= self.add_action("左视图","view-left","左视图",True,self.View_Left)
+        self.actionView_Top= self.add_action("上视图","view-top","上视图",True,self.View_Top)
+        self.actionView_Bottom= self.add_action("下视图","view-bottom","下视图",True,self.View_Bottom)
+        self.actionView_Front= self.add_action("主视图","view-front","主视图",True,self.View_Front)
+        self.actionView_Rear = self.add_action("后视图", "view-rear", "后视图", True, self.View_Rear)
+        self.actionView_Iso= self.add_action("轴测图","view-isometric","轴测图",True,self.View_Iso)
+        self.action_Fitall= self.add_action("全显","zoom-all","全显",True,self.View_fitall)
+        self.action_Export_STP = self.add_action("导出STP", "Std_Export", "导出STP", True,partial(Output_stp_data,self))
+        self.action_Export_IGES = self.add_action("导出IGES", "Std_Export", "导出IGES", True, partial(Output_iges_data,self))
+        self.action_Export_STL = self.add_action("导出STL", "Std_Export", "导出STL", True, Output_stl_data)
+        self.action_Measure_distance_tool = self.add_action("距离测量", "view-measurement", "距离测量", True, partial(Measure_distance_fun,self))
+        self.action_Measure_diameter_tool = self.add_action("孔径测量", "view-measurement", "孔径测量", True, partial(Measure_diameter_fun,self))
 
         # -------------      textboxes       -----------------
 
@@ -459,7 +473,36 @@ class Ui_MainWindow(MainGui.Ui_MainWindow):
 
 
 
+    def View_Bottom(self):
+        pass
+        self.canva._display.View_Bottom()
 
+    def View_Front(self):
+        pass
+        self.canva._display.View_Front()
+
+    def View_Iso(self):
+        pass
+        self.canva._display.View_Iso()
+
+    def View_Left(self):
+        pass
+        self.canva._display.View_Left()
+
+    def View_Right(self):
+        pass
+        self.canva._display.View_Right()
+
+    def View_Top(self):
+        pass
+        self.canva._display.View_Top()
+    def View_Rear(self):
+        pass
+        self.canva._display.View_Rear()
+
+    def View_fitall(self):
+        pass
+        self.canva._display.FitAll()
 
     #ribbom function
     def closeEvent(self, close_event):
@@ -538,24 +581,32 @@ class Ui_MainWindow(MainGui.Ui_MainWindow):
         grid.addWidget(self._text_box3, 3, 2)
 
         # ------View选项----------------------------------
-        view_panel = home_tab.add_ribbon_pane("View")#选项下的菜单
-        view_panel.add_ribbon_widget(RibbonButton(self, self._zoom_action, True))
-        home_tab.add_spacer()
+        #view_panel = home_tab.add_ribbon_pane("View")#选项下的菜单
+        #view_panel.add_ribbon_widget(RibbonButton(self, self._zoom_action, True))
+        #home_tab.add_spacer()
+
+        # ------视图----------------------------------
+        tool_tab = self._ribbon.add_ribbon_tab("视图")
+        view_panel = tool_tab.add_ribbon_pane("视图")
+        view_panel.add_ribbon_widget(RibbonButton(self, self.actionView_Left, True))
+        view_panel.add_ribbon_widget(RibbonButton(self, self.actionView_Right, True))
+        view_panel.add_ribbon_widget(RibbonButton(self, self.actionView_Front, True))
+        view_panel.add_ribbon_widget(RibbonButton(self, self.actionView_Rear, True))
+        view_panel.add_ribbon_widget(RibbonButton(self, self.actionView_Top, True))
+        view_panel.add_ribbon_widget(RibbonButton(self, self.actionView_Bottom, True))
+        view_panel.add_ribbon_widget(RibbonButton(self, self.actionView_Iso, True))
+        view_panel.add_ribbon_widget(RibbonButton(self, self.action_Fitall, True))
+
+        # ------导出数据----------------------------------
+        fix_tab = self._ribbon.add_ribbon_tab("导出数据")
+        fix_panel = fix_tab.add_ribbon_pane("导出数据")
+        fix_panel.add_ribbon_widget(RibbonButton(self, self.action_Export_STP, True))
+        fix_panel.add_ribbon_widget(RibbonButton(self, self.action_Export_IGES, True))
+        fix_panel.add_ribbon_widget(RibbonButton(self, self.action_Export_STL, True))
+
 
         # ------工具----------------------------------
-        tool_tab = self._ribbon.add_ribbon_tab("视图")
-        tool_panel = tool_tab.add_ribbon_pane("Info")
-        tool_panel.add_ribbon_widget(RibbonButton(self, self._about_action, True))
-        tool_panel.add_ribbon_widget(RibbonButton(self, self._license_action, True))
-
-        # ------修复----------------------------------
-        fix_tab = self._ribbon.add_ribbon_tab("导出")
-        fix_panel = fix_tab.add_ribbon_pane("Info")
-        fix_panel.add_ribbon_widget(RibbonButton(self, self._about_action, True))
-        fix_panel.add_ribbon_widget(RibbonButton(self, self._license_action, True))
-
-        # ------纹理----------------------------------
         about_tab = self._ribbon.add_ribbon_tab("工具")
-        info_panel = about_tab.add_ribbon_pane("Info")
-        info_panel.add_ribbon_widget(RibbonButton(self, self._about_action, True))
-        info_panel.add_ribbon_widget(RibbonButton(self, self._license_action, True))
+        tool_panel = about_tab.add_ribbon_pane("工具")
+        tool_panel.add_ribbon_widget(RibbonButton(self, self.action_Measure_distance_tool, True))
+        tool_panel.add_ribbon_widget(RibbonButton(self, self.action_Measure_diameter_tool, True))
