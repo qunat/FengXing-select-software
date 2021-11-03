@@ -2,18 +2,20 @@
 from OCC.Core.AIS import AIS_LengthDimension
 from OCC.Core.BRep import BRep_Tool
 from OCC.Core.Geom import Geom_Circle
+from OCC.Core.Quantity import Quantity_Color, Quantity_TOC_RGB
 from OCC.Core.TopAbs import TopAbs_FACE, TopAbs_EDGE, TopAbs_VERTEX
 from OCC.Core.TopoDS import TopoDS_Builder, TopoDS_Compound, TopoDS_Vertex, TopoDS_Edge, TopoDS_Face
 from OCC.Core.gp import gp_Pnt
 from OCC.Extend.DataExchange import write_step_file, write_iges_file, write_stl_file
 from OCC.Extend.TopologyUtils import TopologyExplorer
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
-import re
+import re,sys
 import  threading
 import os, shutil
 from multiprocessing import Process, Queue
-from module import Upyun_Update
+from module import Upyun_Update,assemble
 import webbrowser
+from OCC.Extend.DataExchange import read_iges_file
 
 
 def Translation_Assemble(self):  # 转换为装配体
@@ -259,3 +261,39 @@ def UP_date_software(self, mode=1):  # mode=1 为GUI模式下载  mode=2 则为�
                 pass
             except:
                 self.statusbar.showMessage("下载错误，请重新下载")
+
+def Quit_(self):  # 退出
+        self.close()
+
+
+def Open_file(self):
+    try:
+        self.chose_document = QFileDialog.getOpenFileName(self, '打开文件', './',
+                                                          " STP files(*.stp , *.step);;(*.iges);;(*.stl)")  # 选择转换的文价夹
+        print("123")
+        filepath = self.chose_document[0]  # 获取打开文件夹路径
+        # 判断文件类型 选择对应的导入函数
+        end_with = str(filepath).lower()
+        if end_with.endswith(".step") or end_with.endswith("stp"):
+            self.import_shape, assemble_relation_list = assemble.read_step_file_with_names_colors(filepath)
+            print(assemble_relation_list)
+            for shpt_lbl_color in self.import_shape:
+                label, c, property = self.import_shape[shpt_lbl_color]
+                # color=Quantity_Color(c.Red(),c.Green(), c.Blue(),Quantity_TOC_RGB)
+                if isinstance(shpt_lbl_color, TopoDS_Face):  # 排除非solid
+                    continue
+                return_shape = self.canva._display.DisplayShape(shpt_lbl_color, color=Quantity_Color(c.Red(),
+                                                                                                     c.Green(),
+                                                                                                     c.Blue(),
+                                                                                                     Quantity_TOC_RGB))
+                #self.part_maneger_core_dict[label] = return_shape
+            self.statusbar.showMessage("状态：打开成功")  ###
+            self.statusBar().showMessage('状态：软件运行正常')
+            return assemble_relation_list
+        elif end_with.endswith(".iges") or end_with.endswith(".igs"):
+            self.import_shape = read_iges_file(filepath)
+            self.statusbar.showMessage("状态：打开成功")  ###
+            self.statusBar().showMessage('状态：软件运行正常')
+
+    except Exception as e:
+        print(e)

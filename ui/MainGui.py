@@ -141,7 +141,7 @@ class Ui_MainWindow(object):
         self.tableWidget.verticalHeader().setHighlightSections(True)
         self.tabWidget_4.addTab(self.tab, "")
         self.tabWidget_5 = QtWidgets.QTabWidget(self.tab_2)
-        self.tabWidget_5.setGeometry(QtCore.QRect(310, 10, 467, 581))
+        self.tabWidget_5.setGeometry(QtCore.QRect(310, 10, 467, 591))
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
         font.setPointSize(12)

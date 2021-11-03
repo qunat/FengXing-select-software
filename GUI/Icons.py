@@ -36,6 +36,9 @@ class Icons(object):
         self.make_icon("view-isometric", "icons/view-isometric.png")
         self.make_icon("Std_Export", "icons/Std_Export.png")
         self.make_icon("view-measurement", "icons/view-measurement.png")
+        self.make_icon("download", "icons/download.png")
+        self.make_icon("purchase", "icons/purchase.png")
+        self.make_icon("about", "icons/about.png")
 
     def make_icon(self, name, path):
         icon = QIcon()

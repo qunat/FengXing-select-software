@@ -4,17 +4,12 @@
 import logging
 import time
 from functools import partial
-
-from OCC.Core.BRep import BRep_Tool
-from OCC.Core.Geom import Geom_Circle
 from OCC.Display.OCCViewer import OffscreenRenderer
 from OCC.Display.backend import load_backend, get_qt_modules
-from PyQt5 import QtCore, QtWidgets, Qt
+from PyQt5 import QtCore, QtWidgets
 from module import  Process_message_word,SelectModule,FuctionModule
 from module.CreateParameter import *
-from OCC.Extend.TopologyUtils import TopologyExplorer
-from PyQt5.QtCore import QObject, pyqtSignal, QCoreApplication, QUrl
-from OCC.Core.AIS import AIS_Shape, AIS_RadiusDimension, AIS_AngleDimension, AIS_LengthDimension
+from PyQt5.QtCore import pyqtSignal
 from ui import MainGui
 
 # ------------------------------------------------------------开始初始化环境
@@ -51,16 +46,11 @@ if os.getenv("PYTHONOCC_OFFSCREEN_RENDERER") == "1":
 used_backend = load_backend(backend_str)
 log.info("GUI backend set to: %s", used_backend)
 # ------------------------------------------------------------初始化结束
-from OCC.Display.qtDisplay import qtViewer3d
-from PyQt5.QtGui import QPixmap, QFont, QBrush, QMovie, QIcon, QCursor
+from PyQt5.QtGui import QIcon
 QtCore, QtGui, QtWidgets, QtOpenGL = get_qt_modules()
-from OCC.Core.TopoDS import TopoDS_Shape, TopoDS_Builder, TopoDS_Compound, topods_CompSolid, TopoDS_Edge, TopoDS_Face,\
-TopoDS_Vertex
-
-from PyQt5.QtWidgets import QComboBox, QPushButton, QHBoxLayout, QMdiArea, QMdiSubWindow, QTextEdit, QApplication, \
-    QFileDialog, QProgressBar, QMessageBox, QTableView, QDockWidget, QListWidget
+from PyQt5.QtWidgets import QApplication
 import sys
-from  module import Upyun_Update, Vision, AboutDownload,ShowGui,ProcessBar
+from  module import Upyun_Update, AboutDownload,ShowGui,ProcessBar
 
 
 Stylesheet = """
@@ -93,18 +83,12 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         self.process_bar = Process_Bar()
         self.process_message = SelectModule.Process_message()
         self.process_message_word = Process_message_word()
-        self.new_vison = Vision()
+
         self.new_AboutDownload = AboutDownload()
         self.centerOnScreen()
         # ----------------------------------------------------------------------------------
         self.sinal = 0
         self.tabWidget_5.currentChanged['int'].connect(self.Refresh)  # 切换时刷新
-        # -----------------------------------------------------------------------------------采购下单
-        #self.Put_order.triggered.connect(self.Put_order_fun)
-        #self.Up_data.triggered.connect(self.UP_date_software)
-        # -------------------------------------------------------------------------------------视图操作
-        self.Quit.triggered.connect(self.Quit_)
-
 
         #-------------------------------------------------------------------------------------右键单击菜单
         self.menuBar = QtWidgets.QMenuBar()
@@ -127,9 +111,6 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         # -------------------------------------------------------------------------------------测量菜单
         self.Measure_distance.triggered.connect(partial(FuctionModule.Measure_distance_fun,self))
         self.Measure_diameter.triggered.connect(partial(FuctionModule.Measure_diameter_fun,self))
-        # -------------------------------------------------------------------------------------自定义信号和槽
-        Measure_distance_signal = pyqtSignal()
-        Measure_diameter_signal = pyqtSignal()
         # --------------------------------------------------------------------------------------显示软件版本
         self.AboutVision.triggered.connect(self.Vision)
         self.AboutDownload.triggered.connect(self.AboutDownload_)
@@ -257,23 +238,14 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         self.process_message.show()
         QApplication.processEvents()
 
-    def Quit_(self):  # 退出
-        self.close()
 
-    def Vision(self):
-        pass
-        self.new_vison.show()
+
 
     def AboutDownload_(self):
         self.new_AboutDownload.show()
 
 
-class Vision(QtWidgets.QMainWindow, Vision.Ui_Form):
-    def __init__(self, parent=None):
-        super(Vision, self).__init__(parent)
-        self.setupUi(self)
-        self.label_6.setText("<A href='https://www.aliyuncad.com/'>软件下载：https://www.aliyuncad.com/</a>")
-        self.label_6.setOpenExternalLinks(True)
+
 
 
 class AboutDownload(QtWidgets.QMainWindow, AboutDownload.Ui_Form):
