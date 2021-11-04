@@ -203,13 +203,6 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
             print(e)
             pass
 
-    def Put_order_fun(self):
-        try:
-            sys.path.append("libs")
-            self.url = 'http://www.fxjiansuji.com/'
-            webbrowser.open(self.url)
-        except:
-            self.statusbar.showMessage("浏览器打开失败")
 
 
 
