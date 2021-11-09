@@ -62,6 +62,7 @@ def Create_ProcessBar(self, ButtonId=None):  # 过程处理函数 获取数据�
             headItem.setForeground(brush)  # 设置文字颜色
             if ButtonId in ["KS系列(孔输出)","KS系列(孔输出法兰)","KS系列(轴输出)","KS系列(轴输出法兰)"] :
                 self.ButtonId = ButtonId
+                print(ButtonId)
                 self.Ceate_combox_table(ButtonId)#建立
                 # 将所有的combox 选项和型号槽绑定 只要选项更新就会选项产品参数
                 for i in self.combox_list:
@@ -141,7 +142,10 @@ def Ceate_combox_table(self, ButtonId=None):  # 生成选项卡表格   步骤�
                 self.boll_SCcrew = Create_Speed_reducer_ks_axle_output()#建立类
             elif ButtonId in["KS系列(轴输出)"]:
                 self.boll_SCcrew = Create_Speed_reducer_ks_hole_output()  # 建立类
+            elif ButtonId in["KS系列(孔输出法兰)"]:
+                self.boll_SCcrew = Create_Speed_reducer_ks_hole_flank_output()  # 建立类
             all_combox_list = self.boll_SCcrew.Create_combox_list()
+            print(all_combox_list)
             self.order_code_position = len(all_combox_list) - 1  # 订购吗的位置
             self.tableWidget_2.setRowCount(len(all_combox_list))  # 参数表格设置.
             self.combox_list = []
@@ -149,6 +153,7 @@ def Ceate_combox_table(self, ButtonId=None):  # 生成选项卡表格   步骤�
             self.tableWidget_2.setColumnWidth(1, blank_size)  # 手动设置列宽
             self.tableWidget_2.setColumnWidth(0, blank_size)  # 手动设置列宽
             self.tableWidget_2.setColumnWidth(2, blank_size)  # 手动设置列宽
+
             # ------------------------------------------------先生成combox选项卡
             for i in all_combox_list:  # 遍历生成所有的选项
                 comBox = QComboBox()
