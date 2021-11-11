@@ -212,7 +212,7 @@ class Ui_MainWindow(MainGui.Ui_MainWindow):
                 self.pushButton[i].clicked.connect(partial(self.Show_gui, index))  # 实时传递数值
                 kinds_path = os.listdir("./Pic/" + i)
                 for j in kinds_path:
-                    if "系列" in i:
+                    if "系列" in i and False:
                         pass
                         ls_str = j.split(".")
                         dic = ls_str[2] + ls_str[3]

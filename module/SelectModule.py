@@ -139,13 +139,12 @@ def Ceate_combox_table(self, ButtonId=None):  # 生成选项卡表格   步骤�
                 pass
             # ------------------------------------------------------------
             if ButtonId in ["KS系列(孔输出)"]:
-                self.boll_SCcrew = Create_Speed_reducer_ks_axle_output()#建立类
+                self.boll_SCcrew = Create_Speed_reducer_ks_hole_output()#建立类
             elif ButtonId in["KS系列(轴输出)"]:
-                self.boll_SCcrew = Create_Speed_reducer_ks_hole_output()  # 建立类
+                self.boll_SCcrew = Create_Speed_reducer_ks_axle_output()  # 建立类
             elif ButtonId in["KS系列(孔输出法兰)"]:
                 self.boll_SCcrew = Create_Speed_reducer_ks_hole_flank_output()  # 建立类
             all_combox_list = self.boll_SCcrew.Create_combox_list()
-            print(all_combox_list)
             self.order_code_position = len(all_combox_list) - 1  # 订购吗的位置
             self.tableWidget_2.setRowCount(len(all_combox_list))  # 参数表格设置.
             self.combox_list = []
@@ -221,6 +220,7 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0, 
     try:
 
         if self.ButtonId in ["KS系列(孔输出)","KS系列(孔输出法兰)","KS系列(轴输出)","KS系列(轴输出法兰)"]:
+
             self.combox_list[7].clear()  # 清楚原来的combobox选项
             series = self.combox_current_text_list[0]  # 机座号
             additems = self.boll_SCcrew.path_dict["FX" + str(series)]  # 对应机座号的可选模型的
@@ -230,7 +230,6 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0, 
                 additem = additems[i].split("\\")[-1].replace(".step", "")
                 self.filename_dict[additem] = copy.deepcopy(additems[i])
                 additem_list.append(additem)
-
             self.combox_list[7].addItems(additem_list)  # 根据选项变换combox里的内容
             series_1 = self.combox_current_text_list[1]  # 减速比
             dict = self.boll_SCcrew.series[str(series)]  # 机座号选型列表
