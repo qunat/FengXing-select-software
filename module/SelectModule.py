@@ -144,8 +144,10 @@ def Ceate_combox_table(self, ButtonId=None):  # 生成选项卡表格   步骤�
                 self.boll_SCcrew = Create_Speed_reducer_ks_axle_output()  # 建立类
             elif ButtonId in["KS系列(孔输出法兰)"]:
                 self.boll_SCcrew = Create_Speed_reducer_ks_hole_flank_output()  # 建立类
+            elif ButtonId in["KS系列(轴输出法兰)"]:
+                self.boll_SCcrew = Create_Speed_reducer_ks_axle_flank_output()  # 建立类
             all_combox_list = self.boll_SCcrew.Create_combox_list()
-            self.order_code_position = len(all_combox_list) - 1  # 订购吗的位置
+            self.order_code_position = len(all_combox_list) - 1  # 订购码的位置
             self.tableWidget_2.setRowCount(len(all_combox_list))  # 参数表格设置.
             self.combox_list = []
             blank_size=self.tableWidget_2.geometry().width()/3
@@ -218,7 +220,6 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0, 
             continue
         self.combox_current_text_list.append(i.currentText())  # 装有combox的列表
     try:
-
         if self.ButtonId in ["KS系列(孔输出)","KS系列(孔输出法兰)","KS系列(轴输出)","KS系列(轴输出法兰)"]:
 
             self.combox_list[7].clear()  # 清楚原来的combobox选项
@@ -284,54 +285,55 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0, 
     except Exception as e:
         print(e)
         pass
-        # 获取combox现在设定的参数
+    # 获取combox现在设定的参数
+    try:
+        # ----------------------------------------------清除原有的模型--------------------------
         try:
-            # ----------------------------------------------清除原有的模型--------------------------
-            try:
-                for i in self.show:
-                    self.canva._display.Context.Remove(i, True)
-                    self.canva._display.Context.erase()
-                self.aCompound.Free()
-            except:
-                pass
-
-            # -----------------设置订购码------------------------------------------------------
-            if self.ButtonId in ["KS系列(孔输出) ", "KS系列(孔输出法兰)", "KS系列(轴输出)", "KS系列(轴输出法兰)"]:  # 设置订购码
-                try:
-                    pass
-                    series = self.combox_list[1].currentText() + "-"  # 系列号和机座代号
-                    Deceleration_ratio = self.combox_list[3].currentText() + "-"  # 减速比
-                    Deceleration_ratio = self.combox_list[2].currentText() + "-"  # 减速比
-                    Rotating_shaft = self.combox_list[3].currentText()[0:2] + "-"  # 附件轴类型
-                    Out_Flanges = self.combox_list[4].currentText()[0] + "-"  # 输出安装法兰类型
-                    Fixt_mode = self.combox_list[5].currentText() + "/"  # 安装方式
-                    Motor_type = self.combox_list[6].currentText()[0:1]  # 电机类型
-                    series = series + Deceleration_ratio + Rotating_shaft + Out_Flanges + Fixt_mode + Motor_type
-                except:
-                    pass
-                newItem = QtWidgets.QTableWidgetItem(series)
-                newItem.setTextAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignCenter)
-                newItem.setBackground(QtGui.QBrush(QtGui.QColor(240, 255, 191)))  # 设置背景颜色
-                newItem.setFont(QFont("微软雅黑", 8, QFont.Black))
-                newItem.setForeground(QBrush(QtGui.QColor(0, 0, 0)))
-                self.tableWidget_2.setSpan(self.order_code_position, 1, 1, 2)
-                self.tableWidget_2.setItem(self.order_code_position, 1, newItem)  # 设置订购码
-
-                # ----------显示3D-------------------------------------------------------------------
-                self.tab_7.repaint()
-                try:
-                    filenam = self.filename_dict[self.combox_list[2].currentText()]
-                    filenam = filenam.repalce(".step", "")
-                    self.aCompound = self.boll_SCcrew.Create_shape(filename=filenam)
-                    self.Show3D(mode=1, aCompound=self.aCompound)
-                    self.statusbar.showMessage("数据生成成功")
-                    pass
-                except:
-                    self.statusbar.showMessage("此零件官方未提供3D，生成失败")
-
-        except Exception as e:
-            print(e)
+            for i in self.show:
+                self.canva._display.Context.Remove(i, True)
+                self.canva._display.Context.erase()
+            self.aCompound.Free()
+        except:
             pass
+
+        # -----------------设置订购码------------------------------------------------------
+        if self.ButtonId in ["KS系列(孔输出) ", "KS系列(孔输出法兰)", "KS系列(轴输出)", "KS系列(轴输出法兰)"]:  # 设置订购码
+            try:
+                pass
+                series = self.combox_list[1].currentText() + "-"  # 系列号和机座代号
+                Deceleration_ratio = self.combox_list[3].currentText() + "-"  # 减速比
+                Deceleration_ratio = self.combox_list[2].currentText() + "-"  # 减速比
+                Rotating_shaft = self.combox_list[3].currentText()[0:2] + "-"  # 附件轴类型
+                Out_Flanges = self.combox_list[4].currentText()[0] + "-"  # 输出安装法兰类型
+                Fixt_mode = self.combox_list[5].currentText() + "/"  # 安装方式
+                Motor_type = self.combox_list[6].currentText()[0:1]  # 电机类型
+                series = series + Deceleration_ratio + Rotating_shaft + Out_Flanges + Fixt_mode + Motor_type
+            except Exception as e:
+                pass
+                print(e)
+            newItem = QtWidgets.QTableWidgetItem(series)
+            newItem.setTextAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignCenter)
+            newItem.setBackground(QtGui.QBrush(QtGui.QColor(240, 255, 191)))  # 设置背景颜色
+            newItem.setFont(QFont("微软雅黑", 8, QFont.Black))
+            newItem.setForeground(QBrush(QtGui.QColor(0, 0, 0)))
+            self.tableWidget_2.setSpan(self.order_code_position, 1, 1, 2)
+            self.tableWidget_2.setItem(self.order_code_position, 1, newItem)  # 设置订购码
+
+            # ----------显示3D-------------------------------------------------------------------
+            self.tab_7.repaint()
+            try:
+                filenam = self.filename_dict[self.combox_list[2].currentText()]
+                filenam = filenam.repalce(".step", "")
+                self.aCompound = self.boll_SCcrew.Create_shape(filename=filenam)
+                self.Show3D(mode=1, aCompound=self.aCompound)
+                self.statusbar.showMessage("数据生成成功")
+                pass
+            except:
+                self.statusbar.showMessage("此零件官方未提供3D，生成失败")
+
+    except Exception as e:
+        print(e)
+        pass
 
 def Ceate_show_3d(self, QClor=1, dict={}, start=0, ):#仅更新3D
         #根据combox选项生成产品参数列表
