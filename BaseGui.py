@@ -137,7 +137,7 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         self.stackedWidget.setCurrentIndex(index)
         self.tabWidget_5.update()
 
-    def Ceate_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0, ):  # 生成/更新产品参数表格
+    def Ceate_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):  # 生成/更新产品参数表格
         '''
         根据combox选项生成产品参数列表
         '''
@@ -170,6 +170,8 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         y = (resolution.height() - self.frameSize().height()) / 2
         self.move(x, y)
 
+    def combox_refresh_function(self):
+        SelectModule.combox_refresh_function(self=self)
 
     def line_clicked(self, shp, *kwargs):
         """ This function is called whenever

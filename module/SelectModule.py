@@ -8,6 +8,7 @@ from PyQt5 import QtWidgets,QtGui,QtCore
 from PyQt5.QtGui import QFont, QBrush, QPixmap, QMovie
 from graphics import GraphicsView, GraphicsPixmapItem
 from module.CreateParameter import *
+from module.CreateParameter import Create_Speed_reducer_kbr_series_1to1
 import copy
 from ui import Process_message
 from module import source
@@ -70,6 +71,18 @@ def Create_ProcessBar(self, ButtonId=None):  # 过程处理函数 获取数据�
                         i.currentTextChanged.connect(self.Ceate_show_3d)#刷新
                         continue
                     i.currentTextChanged.connect(self.Ceate_product_parameter_table_and_show_3d)#刷新
+            if ButtonId in ["KBR系列(1)","KBR系列(2)"] :
+                self.ButtonId = ButtonId
+                self.Ceate_combox_table(ButtonId)#建立
+                # 将所有的combox 选项和型号槽绑定 只要选项更新就会选项产品参数
+                for i in self.combox_list:
+                    if self.combox_list.index(i)==7:
+                        i.currentTextChanged.connect(self.Ceate_show_3d)#刷新
+                        continue
+                    if self.combox_list.index(i)==2:
+                        i.currentTextChanged.connect(self.combox_refresh_function)#根据combox内容刷新combox刷新
+                    else:
+                        i.currentTextChanged.connect(self.Ceate_product_parameter_table_and_show_3d)#刷新
             self.sinal = 1
             self.message.process_message_show()
         except Exception as e:
@@ -137,7 +150,7 @@ def Ceate_combox_table(self, ButtonId=None):  # 生成选项卡表格   步骤�
                 self.scene.addItem(self.item)
             except:
                 pass
-            # ------------------------------------------------------------
+            # ------------------------------------------------------------KS系列
             if ButtonId in ["KS系列(孔输出)"]:
                 self.boll_SCcrew = Create_Speed_reducer_ks_hole_output()#建立类
             elif ButtonId in["KS系列(轴输出)"]:
@@ -146,6 +159,15 @@ def Ceate_combox_table(self, ButtonId=None):  # 生成选项卡表格   步骤�
                 self.boll_SCcrew = Create_Speed_reducer_ks_hole_flank_output()  # 建立类
             elif ButtonId in["KS系列(轴输出法兰)"]:
                 self.boll_SCcrew = Create_Speed_reducer_ks_axle_flank_output()  # 建立类
+
+            #---------------------------------------------------------------KBR系列
+            if ButtonId in ["KBR系列(1)"]:
+                self.boll_SCcrew = Create_Speed_reducer_kbr_series_1to1()#建立类
+
+            elif ButtonId in["KBR系列(2)"]:
+                #self.boll_SCcrew = Create_Speed_reducer_kbr_series_1to2()  # 建立类
+                pass
+
             all_combox_list = self.boll_SCcrew.Create_combox_list()
             self.order_code_position = len(all_combox_list) - 1  # 订购码的位置
             self.tableWidget_2.setRowCount(len(all_combox_list))  # 参数表格设置.
@@ -154,7 +176,6 @@ def Ceate_combox_table(self, ButtonId=None):  # 生成选项卡表格   步骤�
             self.tableWidget_2.setColumnWidth(1, blank_size)  # 手动设置列宽
             self.tableWidget_2.setColumnWidth(0, blank_size)  # 手动设置列宽
             self.tableWidget_2.setColumnWidth(2, blank_size)  # 手动设置列宽
-
             # ------------------------------------------------先生成combox选项卡
             for i in all_combox_list:  # 遍历生成所有的选项
                 comBox = QComboBox()
@@ -200,10 +221,9 @@ def Ceate_combox_table(self, ButtonId=None):  # 生成选项卡表格   步骤�
             # ----------------------------------------------------生成产品参数的tablewidget
 
         except:
-
             pass
 
-def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0, ):  # 生成/更新产品参数表格    #步骤3
+def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):  # 生成/更新产品参数表格    #步骤3
     '''
     根据combox选项生成产品参数列表
     '''
@@ -221,9 +241,8 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0, 
         self.combox_current_text_list.append(i.currentText())  # 装有combox的列表
     try:
         if self.ButtonId in ["KS系列(孔输出)","KS系列(孔输出法兰)","KS系列(轴输出)","KS系列(轴输出法兰)"]:
-
             self.combox_list[7].clear()  # 清楚原来的combobox选项
-            series = self.combox_current_text_list[0]  # 机座号
+            series ="KS"+self.combox_current_text_list[0]  # 机座号
             additems = self.boll_SCcrew.path_dict["FX" + str(series)]  # 对应机座号的可选模型的
             self.filename_dict = {}
             additem_list = []
@@ -239,6 +258,33 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0, 
             dict["背隙"] = self.boll_SCcrew.arcmin[str(series_1)]
             dict["输出轴许可径向力"] = self.boll_SCcrew.output_radial_force[str(series_1)][series]
             dict["制锁"] = self.boll_SCcrew.self_lock[str(series_1)]
+
+        elif self.ButtonId in ["KBR系列(1)","KBR系列(2)"]:
+            self.combox_list[7].clear()  # 清楚原来的combobox选项
+            series = "KBR"+self.combox_current_text_list[0]  # 机座号
+            additems = self.boll_SCcrew.path_dict["FX"+str(series)]  # 对应机座号的可选模型的
+            self.filename_dict = {}
+            additem_list = []
+            for i in range(len(additems)):
+                additem = additems[i].split("\\")[-1].replace(".step", "")
+                self.filename_dict[additem] = copy.deepcopy(additems[i])
+                additem_list.append(additem)
+            self.combox_list[7].addItems(additem_list)  # 根据选项变换combox里的内容
+
+            series_1 = self.combox_current_text_list[1]  # 段数
+            series_2=self.combox_current_text_list[2] #减速比
+            #series_3 = self.boll_SCcrew.series[str(series)]  # 机座号选型列表
+            dict["额定输出扭矩T2N(Nm)"] = self.boll_SCcrew.T2N[series_1][series_2][series]
+            dict["最大输出扭矩(Nm)"] = str(float(self.boll_SCcrew.T2N[series_1][series_2][series])*2)
+            dict["额定输入转速(rpm)"] = self.boll_SCcrew.n1N[str(series)]
+            dict["最大输入转速(rpm)"] = self.boll_SCcrew.n1B[str(series)]
+            dict["背隙"] = self.boll_SCcrew.arcmin[self.combox_current_text_list[4]][series_1][series_2]
+            dict["容许径向力(N)"] = self.boll_SCcrew.F1[str(series)]
+            dict["容许轴向力(N)"] = self.boll_SCcrew.F2[str(series)]
+            dict["效率(%)"] = self.boll_SCcrew.power[str(series_1)][series_2]
+            dict["噪音(DB)"] = self.boll_SCcrew.dB[str(series)]
+            dict["重量(Kg)"] = self.boll_SCcrew.weight[series_1][series]
+            dict["减速局转动惯量(kg.cm2)"] = self.boll_SCcrew.Moment_inertia[series_1][series_2][series]
 
         dict_list = []
         self.tableWidget_2.setRowCount(len(dict) + len(self.combox_list))  # 参数表格设置.
@@ -297,10 +343,9 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0, 
             pass
 
         # -----------------设置订购码------------------------------------------------------
-        if self.ButtonId in ["KS系列(孔输出) ", "KS系列(孔输出法兰)", "KS系列(轴输出)", "KS系列(轴输出法兰)"]:  # 设置订购码
+        if self.ButtonId in ["KS系列(孔输出)", "KS系列(孔输出法兰)", "KS系列(轴输出)", "KS系列(轴输出法兰)"]:  # 设置订购码
             try:
-                pass
-                series = self.combox_list[1].currentText() + "-"  # 系列号和机座代号
+                series ="KS"+self.combox_list[1].currentText() + "-"  # 系列号和机座代号
                 Deceleration_ratio = self.combox_list[3].currentText() + "-"  # 减速比
                 Deceleration_ratio = self.combox_list[2].currentText() + "-"  # 减速比
                 Rotating_shaft = self.combox_list[3].currentText()[0:2] + "-"  # 附件轴类型
@@ -399,3 +444,16 @@ def Show3D(self, mode=0, file=None, aCompound=None):  # 生成3D mode控制显�
             pass
             print(e)
             self.statusbar.showMessage("没有此零件")
+            
+def combox_refresh_function(self):#根据comcox改变combox
+    if self.ButtonId in ["KBR系列(1)", "KBR系列(2)"]:
+        Reduction_ratio = self.boll_SCcrew.lever[self.combox_list[2].currentText()]
+        self.combox_list[3].clear()
+        self.combox_list[3].addItems(Reduction_ratio)  # 根据选项变换combox里的内容
+
+
+
+
+
+
+
