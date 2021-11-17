@@ -10,6 +10,7 @@ from PyQt5 import QtCore, QtWidgets
 from module import  Process_message_word,SelectModule,FuctionModule
 from module.CreateParameter import *
 from PyQt5.QtCore import pyqtSignal
+from module.SelectModule import Process_message
 from ui import MainGui
 
 # ------------------------------------------------------------开始初始化环境
@@ -89,7 +90,6 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         # ----------------------------------------------------------------------------------
         self.sinal = 0
         self.tabWidget_5.currentChanged['int'].connect(self.Refresh)  # 切换时刷新
-
         #-------------------------------------------------------------------------------------右键单击菜单
         self.menuBar = QtWidgets.QMenuBar()
         self.menuBar.setGeometry(QtCore.QRect(0, 0, 606*self.width_scal, 26*self.height_scal))
@@ -163,6 +163,9 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
     def Show3D(self, mode=0, file=None, aCompound=None):  # 生成3D mode控制显示模式
         SelectModule.Show3D(self=self,mode=0, file=None, aCompound=None)
 
+    def show_technical_information(self):
+
+        SelectModule.show_technical_information(self=self)
     def centerOnScreen(self):
         '''Centers the window on the screen.'''
         resolution = QtWidgets.QApplication.desktop().screenGeometry()

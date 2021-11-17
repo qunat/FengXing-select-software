@@ -12,6 +12,7 @@ from module.CreateParameter import Create_Speed_reducer_kbr_series_1to1
 import copy
 from ui import Process_message
 from module import source
+import threading
 
 
 class Process_message(QtWidgets.QMainWindow, Process_message.Ui_Form):  # 零件加载过程界面
@@ -71,7 +72,7 @@ def Create_ProcessBar(self, ButtonId=None):  # 过程处理函数 获取数据�
                         i.currentTextChanged.connect(self.Ceate_show_3d)#刷新
                         continue
                     i.currentTextChanged.connect(self.Ceate_product_parameter_table_and_show_3d)#刷新
-            if ButtonId in ["KBR系列(1)","KBR系列(2)"] :
+            if ButtonId in ["KBR系列(1-1)","KBR系列(1-2)"] :
                 self.ButtonId = ButtonId
                 self.Ceate_combox_table(ButtonId)#建立
                 # 将所有的combox 选项和型号槽绑定 只要选项更新就会选项产品参数
@@ -81,8 +82,10 @@ def Create_ProcessBar(self, ButtonId=None):  # 过程处理函数 获取数据�
                         continue
                     if self.combox_list.index(i)==2:
                         i.currentTextChanged.connect(self.combox_refresh_function)#根据combox内容刷新combox刷新
-                    else:
-                        i.currentTextChanged.connect(self.Ceate_product_parameter_table_and_show_3d)#刷新
+                        continue
+                    if self.combox_list.index(i)==1:
+                        i.currentTextChanged.connect(self.show_technical_information)#根据combox内容刷新技术资料
+                    i.currentTextChanged.connect(self.Ceate_product_parameter_table_and_show_3d)#刷新
             self.sinal = 1
             self.message.process_message_show()
         except Exception as e:
@@ -106,50 +109,7 @@ def Ceate_combox_table(self, ButtonId=None):  # 生成选项卡表格   步骤�
         '''
         self.ButtonId = ButtonId
         try:
-            pass
-            # ----------2D显示图片操作 技术资料（1）----------------
-            try:
-                pix_name = ButtonId  # 2D
-                # print(pix_name)
-                self.pix = QPixmap('Pic\\' + pix_name + ".PNG")
-                self.graphicsView = GraphicsView(self.pix, self.tab_8)
-                self.graphicsView.setGeometry(QtCore.QRect(0, 0, 461*self.width_scal, 581*self.height_scal))
-                self.graphicsView.setObjectName("graphicsView")
-                self.graphicsView.scale(0.4, 0.4)  # 显示比例
-                self.item = GraphicsPixmapItem(self.pix)  # 创建像素图元
-                self.scene = QtWidgets.QGraphicsScene()  # 创建场景显示比例
-                self.scene.addItem(self.item)
-            except:
-                pass
 
-            # ----------2D显示图片操作 技术资料（2）----------------
-            try:
-                pix_name = ButtonId  # 2D
-                # print(pix_name)
-                self.pix = QPixmap('Pic\\' + "KS枫信_3" + ".PNG")
-                self.graphicsView = GraphicsView(self.pix, self.tab_3)
-                self.graphicsView.setGeometry(QtCore.QRect(0, 0, 461*self.width_scal, 581*self.height_scal))
-                self.graphicsView.setObjectName("graphicsView")
-                self.graphicsView.scale(0.4, 0.4)  # 显示比例
-                self.item = GraphicsPixmapItem(self.pix)  # 创建像素图元
-                self.scene = QtWidgets.QGraphicsScene()  # 创建场景显示比例
-                self.scene.addItem(self.item)
-            except:
-                pass
-                # ----------2D显示图片操作 技术资料（3）----------------
-            try:
-                pix_name = ButtonId  # 2D
-                # print(pix_name)
-                self.pix = QPixmap('Pic\\' + "KS枫信_4" + ".PNG")
-                self.graphicsView = GraphicsView(self.pix, self.tab_4)
-                self.graphicsView.setGeometry(QtCore.QRect(0, 0, 461*self.width_scal, 581*self.height_scal))
-                self.graphicsView.setObjectName("graphicsView")
-                self.graphicsView.scale(0.4, 0.4)  # 显示比例
-                self.item = GraphicsPixmapItem(self.pix)  # 创建像素图元
-                self.scene = QtWidgets.QGraphicsScene()  # 创建场景显示比例
-                self.scene.addItem(self.item)
-            except:
-                pass
             # ------------------------------------------------------------KS系列
             if ButtonId in ["KS系列(孔输出)"]:
                 self.boll_SCcrew = Create_Speed_reducer_ks_hole_output()#建立类
@@ -161,10 +121,10 @@ def Ceate_combox_table(self, ButtonId=None):  # 生成选项卡表格   步骤�
                 self.boll_SCcrew = Create_Speed_reducer_ks_axle_flank_output()  # 建立类
 
             #---------------------------------------------------------------KBR系列
-            if ButtonId in ["KBR系列(1)"]:
+            if ButtonId in ["KBR系列(1-1)"]:
                 self.boll_SCcrew = Create_Speed_reducer_kbr_series_1to1()#建立类
 
-            elif ButtonId in["KBR系列(2)"]:
+            elif ButtonId in["KBR系列(2-2)"]:
                 #self.boll_SCcrew = Create_Speed_reducer_kbr_series_1to2()  # 建立类
                 pass
 
@@ -259,7 +219,7 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
             dict["输出轴许可径向力"] = self.boll_SCcrew.output_radial_force[str(series_1)][series]
             dict["制锁"] = self.boll_SCcrew.self_lock[str(series_1)]
 
-        elif self.ButtonId in ["KBR系列(1)","KBR系列(2)"]:
+        elif self.ButtonId in ["KBR系列(1-1)","KBR系列(1-2)"]:
             self.combox_list[7].clear()  # 清楚原来的combobox选项
             series = "KBR"+self.combox_current_text_list[0]  # 机座号
             additems = self.boll_SCcrew.path_dict["FX"+str(series)]  # 对应机座号的可选模型的
@@ -288,6 +248,9 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
 
         dict_list = []
         self.tableWidget_2.setRowCount(len(dict) + len(self.combox_list))  # 参数表格设置.
+        #t1=threading.Thread(target=self.show_technical_information)
+        #t1.start()
+        #self.show_technical_information()#显示技术资料
 
         for key in dict.keys():
             ls_list = []
@@ -424,7 +387,6 @@ def Show3D(self, mode=0, file=None, aCompound=None):  # 生成3D mode控制显�
             self.canva._display.Repaint()
             if mode == 0:
                 file=os.path.join(os.getcwd(),file)
-                print(file)
                 shapes_labels_colors = read_step_file_with_names_colors(file)
                 self.statusbar.showMessage("数据生成中请梢后......")
                 self.aCompound=shapes_labels_colors
@@ -446,7 +408,7 @@ def Show3D(self, mode=0, file=None, aCompound=None):  # 生成3D mode控制显�
             self.statusbar.showMessage("没有此零件")
             
 def combox_refresh_function(self):#根据comcox改变combox
-    if self.ButtonId in ["KBR系列(1)", "KBR系列(2)"]:
+    if self.ButtonId in ["KBR系列(1-1)", "KBR系列(1-2)"]:
         Reduction_ratio = self.boll_SCcrew.lever[self.combox_list[2].currentText()]
         self.combox_list[3].clear()
         self.combox_list[3].addItems(Reduction_ratio)  # 根据选项变换combox里的内容
@@ -454,6 +416,63 @@ def combox_refresh_function(self):#根据comcox改变combox
 
 
 
+def show_technical_information(self):
+    ButtonId=self.ButtonId
+    if ButtonId in ["KS系列(孔输出)", "KS系列(孔输出法兰)", "KS系列(轴输出)", "KS系列(轴输出法兰)"]:
+        pix_name_1 = "KS_1"
+        pix_name_2 = "KS_2"
+    elif ButtonId in ["KBR系列(1-1)"]:
+        series = "KBR" + self.combox_list[1].currentText()  # 机座号
+        print(series)
+        if series in ["KBR60","KBR90"]:
+            pix_name_1 = "KBR-1"
+            pix_name_2 = "KBR-1"
+        elif series in ["KBR115","KBR142"]:
+            pix_name_1 = "KBR-2"
+            pix_name_2 = "KBR-2"
+        elif series in ["KBR180","KBR220"]:
+            pix_name_1 = "KBR-3"
+            pix_name_2 = "KBR-3"
+        elif series in ["KBR280","KBR340"]:
+            pix_name_1 = "KBR-4"
+            pix_name_2 = "KBR-4"
+    # ----------2D显示图片操作 技术资料（1）----------------
+    try:
+        pix_name = ButtonId  # 2D
+        self.pix = QPixmap('Pic\\' + pix_name + ".PNG")
+        self.graphicsView = GraphicsView(self.pix, self.tab_8)
+        self.graphicsView.setGeometry(QtCore.QRect(0, 0, 461 * self.width_scal, 581 * self.height_scal))
+        self.graphicsView.setObjectName("graphicsView")
+        self.graphicsView.scale(0.4, 0.4)  # 显示比例
+        self.item = GraphicsPixmapItem(self.pix)  # 创建像素图元
+        self.scene = QtWidgets.QGraphicsScene()  # 创建场景显示比例
+        self.scene.addItem(self.item)
+    except:
+        pass
 
+    # ----------2D显示图片操作 技术资料（2）----------------
+    try:
+        self.pix = QPixmap('Pic\\' + pix_name_1 + ".PNG")
+        self.graphicsView = GraphicsView(self.pix, self.tab_3)
+        self.graphicsView.setGeometry(QtCore.QRect(0, 0, 461 * self.width_scal, 581 * self.height_scal))
+        self.graphicsView.setObjectName("graphicsView")
+        self.graphicsView.scale(0.4, 0.4)  # 显示比例
+        self.item = GraphicsPixmapItem(self.pix)  # 创建像素图元
+        self.scene = QtWidgets.QGraphicsScene()  # 创建场景显示比例
+        self.scene.addItem(self.item)
+    except:
+        pass
+        # ----------2D显示图片操作 技术资料（3）----------------
+    try:
+        self.pix = QPixmap('Pic\\' + pix_name_2 + ".PNG")
+        self.graphicsView = GraphicsView(self.pix, self.tab_4)
+        self.graphicsView.setGeometry(QtCore.QRect(0, 0, 461 * self.width_scal, 581 * self.height_scal))
+        self.graphicsView.setObjectName("graphicsView")
+        self.graphicsView.scale(0.4, 0.4)  # 显示比例
+        self.item = GraphicsPixmapItem(self.pix)  # 创建像素图元
+        self.scene = QtWidgets.QGraphicsScene()  # 创建场景显示比例
+        self.scene.addItem(self.item)
+    except:
+        pass
 
 

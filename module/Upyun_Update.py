@@ -15,7 +15,13 @@ class Ftp_Update():
     def __init__(self, service='cad-upyun', username='loujiandi', passport='ZuSYm45YqESN7xas8Eng3C58v5gDDsN2'):
         pass
         self.up= upyun.UpYun(service, username, passport,timeout=30, endpoint=upyun.ED_AUTO)
-        #res = self.up.getlist(r'TBI')
+        try:
+            with open("./serve/serve.ini", "r") as f:
+                words = f.readlines()
+                self.cloude_name = words[5].replace("cloude_name=", "").strip("\n")  # 获取云端文件夹名字
+                f.close()
+        except:
+            pass
     def Rename_path(self,string=""):
         try:
             file_path=string.split("/")
@@ -58,9 +64,10 @@ class Ftp_Update():
 
 
     def Down_load_file(self,path):
+
         try:
             with open(path, 'wb') as f:
-                filepath="TBI/"+path
+                filepath=self.cloude_name+path
                 self.up.get(filepath, f)
         except Exception as e:
             print(e)
@@ -214,6 +221,7 @@ class Ftp_Update():
 if __name__ == "__main__":
     pass
     new_ftp = Ftp_Update()
+    print(new_ftp.cloude_name)
     #new_ftp.Check_dir()
     #new_ftp.OutPut_all_file_path()
 
