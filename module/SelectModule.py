@@ -91,6 +91,7 @@ def Create_ProcessBar(self, ButtonId=None):  # 过程处理函数 获取数据�
         except Exception as e:
             print(e)
 
+
         if True:
             if self.sinal == 1:
                 try:
@@ -107,7 +108,7 @@ def Ceate_combox_table(self, ButtonId=None):  # 生成选项卡表格   步骤�
         2.获取各个选项的值
         3.
         '''
-        self.ButtonId = ButtonId
+
         try:
 
             # ------------------------------------------------------------KS系列
@@ -439,8 +440,8 @@ def show_technical_information(self):
     # ----------2D显示图片操作 技术资料（1）----------------
     try:
         pix_name = ButtonId  # 2D
-        self.pix = QPixmap('Pic\\' + pix_name + ".PNG")
-        self.graphicsView = GraphicsView(self.pix, self.tab_8)
+        #self.pix = QPixmap('Pic\\' + pix_name + ".PNG")
+        self.graphicsView = GraphicsView(self.pix_dict[ButtonId], self.tab_8)
         self.graphicsView.setGeometry(QtCore.QRect(0, 0, 461 * self.width_scal, 581 * self.height_scal))
         self.graphicsView.setObjectName("graphicsView")
         self.graphicsView.scale(0.4, 0.4)  # 显示比例
@@ -452,8 +453,8 @@ def show_technical_information(self):
 
     # ----------2D显示图片操作 技术资料（2）----------------
     try:
-        self.pix = QPixmap('Pic\\' + pix_name_1 + ".PNG")
-        self.graphicsView = GraphicsView(self.pix, self.tab_3)
+        #self.pix = QPixmap('Pic\\' + pix_name_1 + ".PNG")
+        self.graphicsView = GraphicsView(self.pix_dict[pix_name_1], self.tab_3)
         self.graphicsView.setGeometry(QtCore.QRect(0, 0, 461 * self.width_scal, 581 * self.height_scal))
         self.graphicsView.setObjectName("graphicsView")
         self.graphicsView.scale(0.4, 0.4)  # 显示比例
@@ -464,8 +465,8 @@ def show_technical_information(self):
         pass
         # ----------2D显示图片操作 技术资料（3）----------------
     try:
-        self.pix = QPixmap('Pic\\' + pix_name_2 + ".PNG")
-        self.graphicsView = GraphicsView(self.pix, self.tab_4)
+        #self.pix = QPixmap('Pic\\' + pix_name_2 + ".PNG")
+        self.graphicsView = GraphicsView(self.pix_dict[pix_name_2], self.tab_4)
         self.graphicsView.setGeometry(QtCore.QRect(0, 0, 461 * self.width_scal, 581 * self.height_scal))
         self.graphicsView.setObjectName("graphicsView")
         self.graphicsView.scale(0.4, 0.4)  # 显示比例
@@ -476,3 +477,13 @@ def show_technical_information(self):
         pass
 
 
+def Create_pix_name_dict(self,path=".\\Pic"):#--------------------------------------------------- 资料图片加载
+    try:
+        self.pix_dict = {}
+        for root, dirs, files in os.walk(".\\Pic", topdown=False):
+            if root == ".\\Pic":
+                for i in files:
+                    pix_name = i.replace(".png", "")
+                    self.pix_dict[pix_name] = QPixmap('Pic\\' + pix_name + ".PNG")
+    except:
+        pass

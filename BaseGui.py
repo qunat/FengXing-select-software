@@ -47,7 +47,8 @@ if os.getenv("PYTHONOCC_OFFSCREEN_RENDERER") == "1":
 used_backend = load_backend(backend_str)
 log.info("GUI backend set to: %s", used_backend)
 # ------------------------------------------------------------初始化结束
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QPixmap
+
 QtCore, QtGui, QtWidgets, QtOpenGL = get_qt_modules()
 from PyQt5.QtWidgets import QApplication
 import sys
@@ -114,6 +115,7 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         # --------------------------------------------------------------------------------------显示软件版本
         self.AboutVision.triggered.connect(self.Vision)
         self.AboutDownload.triggered.connect(self.AboutDownload_)
+        #--------------------------------------------------------------------------------------- 资料图片加载
 
 
 
