@@ -116,6 +116,7 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         self.AboutVision.triggered.connect(self.Vision)
         self.AboutDownload.triggered.connect(self.AboutDownload_)
         #--------------------------------------------------------------------------------------- 资料图片加载
+        SelectModule.Create_pix_name_dict(self=self)
 
 
 
@@ -321,6 +322,7 @@ if __name__ == '__main__':
         splash = QtWidgets.QSplashScreen(QtGui.QPixmap(":/picture/Pic/setup_pic.jpg"))  # 启动图片设置
         splash.show()
         splash.showMessage("软件启动中......")
+        splash.showMessage("数据加载中......")
     except:
         pass
     # --------------------

@@ -3,6 +3,20 @@
     <file>icons/gear.ico</file>
   </qresource>
   <qresource prefix="picture">
+    <file>Pic/KBR-1.png</file>
+    <file>Pic/KBR-2.png</file>
+    <file>Pic/KBR-3.png</file>
+    <file>Pic/KBR-4.png</file>
+    <file>Pic/KBR系列(1-1).png</file>
+    <file>Pic/KBR系列(1-2) .png</file>
+    <file>Pic/KS_1.png</file>
+    <file>Pic/KS_2.png</file>
+    <file>Pic/KS系列(孔输出) .png</file>
+    <file>Pic/KS系列(孔输出法兰).png</file>
+    <file>Pic/KS系列(轴输出).png</file>
+    <file>Pic/KS系列(轴输出法兰) .png</file>
+    <file>Pic/setup_pic.jpg</file>
+    <file>Pic/TBI.png</file>
     <file>icons/gear.ico</file>
     <file>icons/gear.png</file>
     <file>icons/Cloud.ico</file>

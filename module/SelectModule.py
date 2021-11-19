@@ -12,7 +12,7 @@ from module.CreateParameter import Create_Speed_reducer_kbr_series_1to1
 import copy
 from ui import Process_message
 from module import source
-import threading
+
 
 
 class Process_message(QtWidgets.QMainWindow, Process_message.Ui_Form):  # 零件加载过程界面
@@ -445,15 +445,18 @@ def show_technical_information(self):
         self.graphicsView.setGeometry(QtCore.QRect(0, 0, 461 * self.width_scal, 581 * self.height_scal))
         self.graphicsView.setObjectName("graphicsView")
         self.graphicsView.scale(0.4, 0.4)  # 显示比例
+        self.graphicsView.repaint()
+        self.graphicsView.update()
+        self.graphicsView.show()
         self.item = GraphicsPixmapItem(self.pix)  # 创建像素图元
         self.scene = QtWidgets.QGraphicsScene()  # 创建场景显示比例
         self.scene.addItem(self.item)
+
     except:
         pass
 
     # ----------2D显示图片操作 技术资料（2）----------------
     try:
-        #self.pix = QPixmap('Pic\\' + pix_name_1 + ".PNG")
         self.graphicsView = GraphicsView(self.pix_dict[pix_name_1], self.tab_3)
         self.graphicsView.setGeometry(QtCore.QRect(0, 0, 461 * self.width_scal, 581 * self.height_scal))
         self.graphicsView.setObjectName("graphicsView")
@@ -461,11 +464,13 @@ def show_technical_information(self):
         self.item = GraphicsPixmapItem(self.pix)  # 创建像素图元
         self.scene = QtWidgets.QGraphicsScene()  # 创建场景显示比例
         self.scene.addItem(self.item)
+        self.graphicsView.repaint()
+        self.graphicsView.update()
+        self.graphicsView.show()
     except:
         pass
         # ----------2D显示图片操作 技术资料（3）----------------
     try:
-        #self.pix = QPixmap('Pic\\' + pix_name_2 + ".PNG")
         self.graphicsView = GraphicsView(self.pix_dict[pix_name_2], self.tab_4)
         self.graphicsView.setGeometry(QtCore.QRect(0, 0, 461 * self.width_scal, 581 * self.height_scal))
         self.graphicsView.setObjectName("graphicsView")
@@ -473,6 +478,9 @@ def show_technical_information(self):
         self.item = GraphicsPixmapItem(self.pix)  # 创建像素图元
         self.scene = QtWidgets.QGraphicsScene()  # 创建场景显示比例
         self.scene.addItem(self.item)
+        self.graphicsView.repaint()
+        self.graphicsView.update()
+        self.graphicsView.show()
     except:
         pass
 
@@ -483,7 +491,11 @@ def Create_pix_name_dict(self,path=".\\Pic"):#----------------------------------
         for root, dirs, files in os.walk(".\\Pic", topdown=False):
             if root == ".\\Pic":
                 for i in files:
+                    if i.lower().endswith("jpg"):
+                        continue
                     pix_name = i.replace(".png", "")
-                    self.pix_dict[pix_name] = QPixmap('Pic\\' + pix_name + ".PNG")
-    except:
+                    self.pix_dict[pix_name] = QPixmap(":/picture/"+'Pic/' + pix_name + ".png")
+        print(self.pix_dict)
+    except Exception as e:
+        print(e)
         pass
