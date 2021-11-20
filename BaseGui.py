@@ -76,6 +76,16 @@ Stylesheet = """
 
 class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWindow):
     def __init__(self, parent=None):
+        # 启动界面 要先于GUI初始化
+        try:
+            self.splash = QtWidgets.QSplashScreen(QtGui.QPixmap(":/picture/Pic/setup_pic.jpg"))  # 启动图片设置
+            self.splash.show()
+            self.splash.showMessage("软件启动中......")
+            self.splash.showMessage("数据加载中......")
+            SelectModule.Create_pix_name_dict(self=self)
+        except:
+            pass
+
         super(Mywindown, self).__init__(parent)
         # 3D显示设置
         self.setWindowTitle("枫信自动化选型软件测试版")
@@ -98,6 +108,9 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         self.canva.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.canva.customContextMenuRequested['QPoint'].connect(self.rightMenuShow)
 
+
+
+
         # -----------------------------------------------------------------------------------版本更新提示
         try:
             now_vision = self.get_now_vision()
@@ -116,9 +129,12 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         self.AboutVision.triggered.connect(self.Vision)
         self.AboutDownload.triggered.connect(self.AboutDownload_)
         #--------------------------------------------------------------------------------------- 资料图片加载
-        SelectModule.Create_pix_name_dict(self=self)
 
 
+
+    def Create_pix_name_dict(self,splash):
+        #SelectModule.Create_pix_name_dict(self=self,splash=splash)
+        pass
 
     def doubleClickedHandle(self, index):
         text = self.model().item(index.row(), 0).text()
@@ -317,14 +333,6 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication.instance()  # checks if QApplication already exists
     if not app:  # create QApplication if it doesnt exist
         app = QtWidgets.QApplication(sys.argv)
-    # 启动界面
-    try:
-        splash = QtWidgets.QSplashScreen(QtGui.QPixmap(":/picture/Pic/setup_pic.jpg"))  # 启动图片设置
-        splash.show()
-        splash.showMessage("软件启动中......")
-        splash.showMessage("数据加载中......")
-    except:
-        pass
     # --------------------
     win = Mywindown()
     win.show()
@@ -343,7 +351,8 @@ if __name__ == '__main__':
     win.showMaximized()
 
     try:
-        splash.finish(win)
+        win.splash.finish(win)
+        pass
     except:
         pass
     app.exec_()

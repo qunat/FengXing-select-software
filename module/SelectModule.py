@@ -486,6 +486,7 @@ def show_technical_information(self):
 
 
 def Create_pix_name_dict(self,path=".\\Pic"):#--------------------------------------------------- 资料图片加载
+
     try:
         self.pix_dict = {}
         for root, dirs, files in os.walk(".\\Pic", topdown=False):
@@ -495,7 +496,7 @@ def Create_pix_name_dict(self,path=".\\Pic"):#----------------------------------
                         continue
                     pix_name = i.replace(".png", "")
                     self.pix_dict[pix_name] = QPixmap(":/picture/"+'Pic/' + pix_name + ".png")
-        print(self.pix_dict)
+                    self.splash.showMessage("图片加载中:"+i)
     except Exception as e:
         print(e)
         pass
