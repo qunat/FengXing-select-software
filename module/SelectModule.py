@@ -249,9 +249,6 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
 
         dict_list = []
         self.tableWidget_2.setRowCount(len(dict) + len(self.combox_list))  # 参数表格设置.
-        #t1=threading.Thread(target=self.show_technical_information)
-        #t1.start()
-        #self.show_technical_information()#显示技术资料
 
         for key in dict.keys():
             ls_list = []
@@ -310,6 +307,27 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
         if self.ButtonId in ["KS系列(孔输出)", "KS系列(孔输出法兰)", "KS系列(轴输出)", "KS系列(轴输出法兰)"]:  # 设置订购码
             try:
                 series ="KS"+self.combox_list[1].currentText() + "-"  # 系列号和机座代号
+                Deceleration_ratio = self.combox_list[3].currentText() + "-"  # 减速比
+                Deceleration_ratio = self.combox_list[2].currentText() + "-"  # 减速比
+                Rotating_shaft = self.combox_list[3].currentText()[0:2] + "-"  # 附件轴类型
+                Out_Flanges = self.combox_list[4].currentText()[0] + "-"  # 输出安装法兰类型
+                Fixt_mode = self.combox_list[5].currentText() + "/"  # 安装方式
+                Motor_type = self.combox_list[6].currentText()[0:1]  # 电机类型
+                series = series + Deceleration_ratio + Rotating_shaft + Out_Flanges + Fixt_mode + Motor_type
+            except Exception as e:
+                pass
+                print(e)
+            newItem = QtWidgets.QTableWidgetItem(series)
+            newItem.setTextAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignCenter)
+            newItem.setBackground(QtGui.QBrush(QtGui.QColor(240, 255, 191)))  # 设置背景颜色
+            newItem.setFont(QFont("微软雅黑", 8, QFont.Black))
+            newItem.setForeground(QBrush(QtGui.QColor(0, 0, 0)))
+            self.tableWidget_2.setSpan(self.order_code_position, 1, 1, 2)
+            self.tableWidget_2.setItem(self.order_code_position, 1, newItem)  # 设置订购码
+
+        if self.ButtonId in ["KBR系列(1-1)", "KBR系列(1-2) "]:  # 设置订购码
+            try:
+                series = "KS" + self.combox_list[1].currentText() + "-"  # 系列号和机座代号
                 Deceleration_ratio = self.combox_list[3].currentText() + "-"  # 减速比
                 Deceleration_ratio = self.combox_list[2].currentText() + "-"  # 减速比
                 Rotating_shaft = self.combox_list[3].currentText()[0:2] + "-"  # 附件轴类型
@@ -489,14 +507,21 @@ def Create_pix_name_dict(self,path=".\\Pic"):#----------------------------------
 
     try:
         self.pix_dict = {}
+        index=0
+        all_number=0
+        compplete_percent=0
         for root, dirs, files in os.walk(".\\Pic", topdown=False):
             if root == ".\\Pic":
+                all_number=len(files)
                 for i in files:
                     if i.lower().endswith("jpg"):
                         continue
                     pix_name = i.replace(".png", "")
                     self.pix_dict[pix_name] = QPixmap(":/picture/"+'Pic/' + pix_name + ".png")
-                    self.splash.showMessage("图片加载中:"+i)
+                    index+=1
+                    compplete_percent=str(int(index/all_number*100))+"%"
+                    self.splash.showMessage("资源加载中:"+compplete_percent+"  "+i)
+        self.splash.showMessage("资源加载中:" + "100%"+" 完成")
     except Exception as e:
         print(e)
         pass
