@@ -1,5 +1,4 @@
 # -*- coding: UTF-8 -*-
-
 from ftplib import FTP  # 加载ftp模块
 from ftplib import error_perm
 import os

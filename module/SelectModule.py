@@ -108,7 +108,7 @@ def Ceate_combox_table(self, ButtonId=None):  # 生成选项卡表格   步骤�
         2.获取各个选项的值
         3.
         '''
-
+        print(123)
         try:
 
             # ------------------------------------------------------------KS系列
@@ -120,14 +120,11 @@ def Ceate_combox_table(self, ButtonId=None):  # 生成选项卡表格   步骤�
                 self.boll_SCcrew = Create_Speed_reducer_ks_hole_flank_output()  # 建立类
             elif ButtonId in["KS系列(轴输出法兰)"]:
                 self.boll_SCcrew = Create_Speed_reducer_ks_axle_flank_output()  # 建立类
-
             #---------------------------------------------------------------KBR系列
             if ButtonId in ["KBR系列(1-1)"]:
                 self.boll_SCcrew = Create_Speed_reducer_kbr_series_1to1()#建立类
-
-            elif ButtonId in["KBR系列(2-2)"]:
-                #self.boll_SCcrew = Create_Speed_reducer_kbr_series_1to2()  # 建立类
-                pass
+            elif ButtonId in["KBR系列(1-2)"]:
+                self.boll_SCcrew = Create_Speed_reducer_kbr_series_1to2()  # 建立类
 
             all_combox_list = self.boll_SCcrew.Create_combox_list()
             self.order_code_position = len(all_combox_list) - 1  # 订购码的位置
