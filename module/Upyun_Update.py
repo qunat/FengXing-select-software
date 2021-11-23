@@ -66,7 +66,7 @@ class Ftp_Update():
 
         try:
             with open(path, 'wb') as f:
-                filepath=self.cloude_name+path
+                filepath=self.cloude_name+"/"+path
                 self.up.get(filepath, f)
         except Exception as e:
             print(e)

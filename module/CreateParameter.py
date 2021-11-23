@@ -200,7 +200,7 @@ class Create_Speed_reducer_ks_axle_output(object):
                     ls_kind = i.split("\\")[-1]
                     ls_kind = ls_kind.split("-")[0]
                 self.path_dict[ls_kind] = j
-            print(self.path_dict)
+
         except Exception as e:
             print(e)
 
@@ -538,7 +538,7 @@ class Create_Speed_reducer_ks_hole_flank_output(Create_Speed_reducer_ks_axle_out
 
 class Create_Speed_reducer_ks_axle_flank_output(Create_Speed_reducer_ks_axle_output):
     def __init__(self,parent=None):
-        super(Create_Speed_reducer_ks_axle_flank_output, self).__init__(parent)
+        #super(Create_Speed_reducer_ks_axle_flank_output, self).__init__(parent)
         self.path_list = []
         self.path_dict = {}
         self.T2N = {"7.5": {"KS40": 35, "KS50": 65, "KS63": 120, "KS75": 230, "KS90": 350, "KS110": 600, "KS130": 1000,
@@ -890,7 +890,7 @@ class Create_Speed_reducer_kbr_series_1to1(object):#输入伞比1:1
 
 class Create_Speed_reducer_kbr_series_1to2(Create_Speed_reducer_kbr_series_1to1):#输入伞比1:1
     def __init__(self):
-        print(334)
+
         super(Create_Speed_reducer_kbr_series_1to2, self).__init__()
         pass
         D_r_dict = {}  # Deceleration_ratio_dict

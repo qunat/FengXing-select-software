@@ -8,7 +8,7 @@ from OCC.Core.TopoDS import TopoDS_Builder, TopoDS_Compound, TopoDS_Vertex, Topo
 from OCC.Core.gp import gp_Pnt
 from OCC.Extend.DataExchange import write_step_file, write_iges_file, write_stl_file
 from OCC.Extend.TopologyUtils import TopologyExplorer
-from PyQt5.QtWidgets import QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QFileDialog, QMessageBox, QApplication
 import re,sys
 import  threading
 import os, shutil
@@ -54,16 +54,20 @@ def Assemble_Rename(self):
         pass
 
 
-def Output_stp_data(self):  # 将数据转换成stp并导出
+def Output_stp_data(self,mode=1):  # 将数据转换成stp并导出
     try:
         pass
-        self.Translation_Assemble(self=self)
+        #self.Translation_Assemble(self=self)
+        #self.statusbar.showMessage("零件导出中......")
         path = "../" + self.filename
         fileName, ok = QFileDialog.getSaveFileName(self, "文件保存", path, "All Files (*) (*.step)")
+        self.message.process_message_show()
+        QApplication.processEvents()
         write_step_file(self.aCompound, fileName)
         self.save_part_path = fileName
-        self.Assemble_Rename()
+        #self.Assemble_Rename()
         self.statusbar.showMessage("零件导出成功")
+        self.message.close()
 
     except:
         pass
@@ -73,12 +77,17 @@ def Output_stp_data(self):  # 将数据转换成stp并导出
 def Output_iges_data(self):  # 将数据转换成iges并导出
     try:
         pass
-        self.Translation_Assemble(self=self)
+        #self.Translation_Assemble(self=self)
+        #self.statusbar.showMessage("零件导出中......")
         path = "./" + self.filename
         fileName, ok = QFileDialog.getSaveFileName(self, "文件保存", path, "All Files (*) (*.iges)")
+        self.message.process_message_show()
+        QApplication.processEvents()
+        self.statusbar.showMessage("数据生成中请稍后......")
         write_iges_file(self.aCompound, fileName)
         self.save_part_path = fileName
         self.statusbar.showMessage("零件导出成功")
+        self.message.close()
 
     except:
         pass
@@ -88,12 +97,16 @@ def Output_iges_data(self):  # 将数据转换成iges并导出
 def Output_stl_data(self):  # stl
     try:
         pass
-        self.Translation_Assemble(self=self)
+        #self.Translation_Assemble(self=self)
+        #self.statusbar.showMessage("零件导出中......")
         path = "./" + self.filename
-        fileName, ok = QFileDialog.getSaveFileName(self, "文件保存", path, "All Files (*) (*.iges)")
+        fileName, ok = QFileDialog.getSaveFileName(self, "文件保存", path, "All Files (*) (*.stl)")
+        self.message.process_message_show()
+        QApplication.processEvents()
         write_stl_file(self.aCompound, fileName)
         self.save_part_path = fileName
         self.statusbar.showMessage("零件导出成功")
+        self.message.close()
 
     except:
         pass
@@ -270,13 +283,12 @@ def Open_file(self):
     try:
         self.chose_document = QFileDialog.getOpenFileName(self, '打开文件', './',
                                                           " STP files(*.stp , *.step);;(*.iges);;(*.stl)")  # 选择转换的文价夹
-        print("123")
         filepath = self.chose_document[0]  # 获取打开文件夹路径
         # 判断文件类型 选择对应的导入函数
         end_with = str(filepath).lower()
         if end_with.endswith(".step") or end_with.endswith("stp"):
             self.import_shape, assemble_relation_list = assemble.read_step_file_with_names_colors(filepath)
-            print(assemble_relation_list)
+            self.statusbar.showMessage("数据生成中请稍后......")
             for shpt_lbl_color in self.import_shape:
                 label, c, property = self.import_shape[shpt_lbl_color]
                 # color=Quantity_Color(c.Red(),c.Green(), c.Blue(),Quantity_TOC_RGB)

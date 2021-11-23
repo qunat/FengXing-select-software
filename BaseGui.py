@@ -12,6 +12,8 @@ from module.CreateParameter import *
 from PyQt5.QtCore import pyqtSignal
 from module.SelectModule import Process_message
 from ui import MainGui
+#from  pynput.mouse import Button, Controller
+
 
 # ------------------------------------------------------------开始初始化环境
 log = logging.getLogger(__name__)
@@ -97,7 +99,9 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         self.process_message_word = Process_message_word()
 
         self.new_AboutDownload = AboutDownload()
+        #self.mouse = Controller()
         self.centerOnScreen()
+
         # ----------------------------------------------------------------------------------
         self.sinal = 0
         self.tabWidget_5.currentChanged['int'].connect(self.Refresh)  # 切换时刷新
@@ -191,6 +195,10 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         x = (resolution.width() - self.frameSize().width()) / 2
         y = (resolution.height() - self.frameSize().height()) / 2
         self.move(x, y)
+        self.x=resolution.width()/2
+        self.y=resolution.height()/2
+        # 鼠标移动（x,y）个距离
+
 
     def combox_refresh_function(self):
         SelectModule.combox_refresh_function(self=self)
@@ -245,7 +253,7 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         # ftp_serve.Down_load_file("serve/serve.ini")
         with open("./serve/serve.ini", "r") as f:
             words = f.readlines()
-            self.notes = words[-1].replace("notes=", "").strip("\n")
+            self.notes = words[4].replace("notes=", "").strip("\n")
             f.close()
 
         return self.notes

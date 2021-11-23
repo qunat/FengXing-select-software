@@ -11,7 +11,9 @@ from module.CreateParameter import *
 from module.CreateParameter import Create_Speed_reducer_kbr_series_1to1
 import copy
 from ui import Process_message
-from module import source
+#from module import source
+#from  pynput.mouse import Button, Controller
+
 
 
 
@@ -64,13 +66,14 @@ def Create_ProcessBar(self, ButtonId=None):  # 过程处理函数 获取数据�
             headItem.setForeground(brush)  # 设置文字颜色
             if ButtonId in ["KS系列(孔输出)","KS系列(孔输出法兰)","KS系列(轴输出)","KS系列(轴输出法兰)"] :
                 self.ButtonId = ButtonId
-                print(ButtonId)
                 self.Ceate_combox_table(ButtonId)#建立
                 # 将所有的combox 选项和型号槽绑定 只要选项更新就会选项产品参数
                 for i in self.combox_list:
                     if self.combox_list.index(i)==7:
                         i.currentTextChanged.connect(self.Ceate_show_3d)#刷新
                         continue
+                    if self.combox_list.index(i)==1:
+                        i.currentTextChanged.connect(self.show_technical_information)#根据combox内容刷新技术资料
                     i.currentTextChanged.connect(self.Ceate_product_parameter_table_and_show_3d)#刷新
             if ButtonId in ["KBR系列(1-1)","KBR系列(1-2)"] :
                 self.ButtonId = ButtonId
@@ -108,7 +111,6 @@ def Ceate_combox_table(self, ButtonId=None):  # 生成选项卡表格   步骤�
         2.获取各个选项的值
         3.
         '''
-        print(123)
         try:
 
             # ------------------------------------------------------------KS系列
@@ -120,6 +122,7 @@ def Ceate_combox_table(self, ButtonId=None):  # 生成选项卡表格   步骤�
                 self.boll_SCcrew = Create_Speed_reducer_ks_hole_flank_output()  # 建立类
             elif ButtonId in["KS系列(轴输出法兰)"]:
                 self.boll_SCcrew = Create_Speed_reducer_ks_axle_flank_output()  # 建立类
+
             #---------------------------------------------------------------KBR系列
             if ButtonId in ["KBR系列(1-1)"]:
                 self.boll_SCcrew = Create_Speed_reducer_kbr_series_1to1()#建立类
@@ -322,14 +325,15 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
             self.tableWidget_2.setSpan(self.order_code_position, 1, 1, 2)
             self.tableWidget_2.setItem(self.order_code_position, 1, newItem)  # 设置订购码
 
-        if self.ButtonId in ["KBR系列(1-1)", "KBR系列(1-2) "]:  # 设置订购码
+        if self.ButtonId in ["KBR系列(1-1)", "KBR系列(1-2)"]:  # 设置订购码
             try:
-                series = "KS" + self.combox_list[1].currentText() + "-"  # 系列号和机座代号
+
+                series = "KBR" + self.combox_list[1].currentText() + "-"  # 系列号和机座代号
                 Deceleration_ratio = self.combox_list[3].currentText() + "-"  # 减速比
-                Deceleration_ratio = self.combox_list[2].currentText() + "-"  # 减速比
-                Rotating_shaft = self.combox_list[3].currentText()[0:2] + "-"  # 附件轴类型
-                Out_Flanges = self.combox_list[4].currentText()[0] + "-"  # 输出安装法兰类型
-                Fixt_mode = self.combox_list[5].currentText() + "/"  # 安装方式
+                Deceleration_ratio = self.combox_list[2].currentText() + "-"  # 段数
+                Rotating_shaft = self.combox_list[3].currentText()[0:2] + "-"  # 减速比
+                Out_Flanges = self.combox_list[4].currentText()[0] + "-"  # 轴型
+                Fixt_mode = self.combox_list[5].currentText()[0:2] + "/"  # 背隙
                 Motor_type = self.combox_list[6].currentText()[0:1]  # 电机类型
                 series = series + Deceleration_ratio + Rotating_shaft + Out_Flanges + Fixt_mode + Motor_type
             except Exception as e:
@@ -377,9 +381,11 @@ def Ceate_show_3d(self, QClor=1, dict={}, start=0, ):#仅更新3D
             try:
                 if self.combox_list[7].currentText()!="-":
                     filenam = self.filename_dict[self.combox_list[7].currentText()]
+
                     #filenam=filenam.replace(".step","")
                     #self.aCompound = self.boll_SCcrew.Create_shape(filename=filenam)
                     filenam=filenam.replace(".\\","")
+                    self.output_filename =filenam
                     Show3D(self=self,mode=0,file=filenam)
                     self.canva._display.Repaint()
                     self.filename=filenam
@@ -401,6 +407,9 @@ def Show3D(self, mode=0, file=None, aCompound=None):  # 生成3D mode控制显�
             self.canva._display.hide_triedron()
             self.canva._display.display_triedron()
             self.canva._display.Repaint()
+            self.new_build = TopoDS_Builder()  # 建立一个TopoDS_Builder()
+            self.New_Compound = TopoDS_Compound()  # 定义一个复合体
+            self.new_build.MakeCompound(self.New_Compound)  # 生成一个复合体DopoDS_shape
             if mode == 0:
                 file=os.path.join(os.getcwd(),file)
                 shapes_labels_colors = read_step_file_with_names_colors(file)
@@ -409,14 +418,19 @@ def Show3D(self, mode=0, file=None, aCompound=None):  # 生成3D mode控制显�
                 for shpt_lbl_color in shapes_labels_colors:
                     label, c = shapes_labels_colors[shpt_lbl_color]
                     for e in TopologyExplorer(shpt_lbl_color).solids():
-                        pass
+                        self.new_build.Add(self.New_Compound, e)
                         self.canva._display.DisplayColoredShape(e, color=Quantity_Color(c.Red(),
                                                                                         c.Green(),
                                                                                         c.Blue(),
-                                                                                        Quantity_TOC_RGB))
+                                                                                   Quantity_TOC_RGB))
+                    self.aCompound=self.New_Compound
             elif mode == 1:
 
                 self.show = self.canva._display.DisplayColoredShape(aCompound, color="WHITE", update=True)
+            self.canva._display.FitAll()
+            #self.mouse.position = (self.x, self.y)
+            #self.mouse.press(Button.left)
+            #self.mouse.release(Button.left)
 
         except Exception as e:
             pass
@@ -437,9 +451,8 @@ def show_technical_information(self):
     if ButtonId in ["KS系列(孔输出)", "KS系列(孔输出法兰)", "KS系列(轴输出)", "KS系列(轴输出法兰)"]:
         pix_name_1 = "KS_1"
         pix_name_2 = "KS_2"
-    elif ButtonId in ["KBR系列(1-1)"]:
+    elif ButtonId in ["KBR系列(1-1)","KBR系列(1-2)"]:
         series = "KBR" + self.combox_list[1].currentText()  # 机座号
-        print(series)
         if series in ["KBR60","KBR90"]:
             pix_name_1 = "KBR-1"
             pix_name_2 = "KBR-1"
@@ -467,7 +480,8 @@ def show_technical_information(self):
         self.scene = QtWidgets.QGraphicsScene()  # 创建场景显示比例
         self.scene.addItem(self.item)
 
-    except:
+    except Exception as e:
+        print(e)
         pass
 
     # ----------2D显示图片操作 技术资料（2）----------------
@@ -514,7 +528,7 @@ def Create_pix_name_dict(self,path=".\\Pic"):#----------------------------------
                     if i.lower().endswith("jpg"):
                         continue
                     pix_name = i.replace(".png", "")
-                    self.pix_dict[pix_name] = QPixmap(":/picture/"+'Pic/' + pix_name + ".png")
+                    self.pix_dict[pix_name] = QPixmap("./"+'Pic/' + pix_name + ".png")
                     index+=1
                     compplete_percent=str(int(index/all_number*100))+"%"
                     self.splash.showMessage("资源加载中:"+compplete_percent+"  "+i)

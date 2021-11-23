@@ -28,6 +28,8 @@ from GUI.RibbonWidget import *
 from module.FuctionModule import *
 
 
+
+
 class Ui_MainWindow(MainGui.Ui_MainWindow):
     def __init__(self):
         self.setupUi(self)
@@ -61,11 +63,11 @@ class Ui_MainWindow(MainGui.Ui_MainWindow):
         self.actionView_Rear = self.add_action("后视图", "view-rear", "后视图", True, self.View_Rear)
         self.actionView_Iso= self.add_action("轴测图","view-isometric","轴测图",True,self.View_Iso)
         self.action_Fitall= self.add_action("全显","zoom-all","全显",True,self.View_fitall)
-        self.action_Export_STP = self.add_action("导出STP", "Std_Export", "导出STP", True,partial(Output_stp_data,self))
-        self.action_Export_IGES = self.add_action("导出IGES", "Std_Export", "导出IGES", True, partial(Output_iges_data,self))
+        self.action_Export_STP = self.add_action("导出STP", "Std_Export", "导出STP", True,partial(Output_stp_data,self=self))
+        self.action_Export_IGES = self.add_action("导出IGES", "Std_Export", "导出IGES", True, partial(Output_iges_data,self=self))
         self.action_Export_STL = self.add_action("导出STL", "Std_Export", "导出STL", True, Output_stl_data)
-        self.action_Measure_distance_tool = self.add_action("距离测量", "view-measurement", "距离测量", True, partial(Measure_distance_fun,self))
-        self.action_Measure_diameter_tool = self.add_action("孔径测量", "view-measurement", "孔径测量", True, partial(Measure_diameter_fun,self))
+        self.action_Measure_distance_tool = self.add_action("距离测量", "view-measurement", "距离测量", True, partial(Measure_distance_fun,self=self))
+        self.action_Measure_diameter_tool = self.add_action("孔径测量", "view-measurement", "孔径测量", True, partial(Measure_diameter_fun,self=self))
         self.action_download = self.add_action("下载更新", "download", "下载更新", True, partial(UP_date_software,self))
         self.action_purchase = self.add_action("采购下单", "purchase", "采购下单", True, partial(Put_order_fun,self))
         self.action_about_software = self.add_action("版本信息", "about", "版本信息", True, self.Vision)
@@ -283,7 +285,7 @@ class Ui_MainWindow(MainGui.Ui_MainWindow):
             except:
                 pass
         #确定行数
-        print(Number_columns)
+        #print(Number_columns)
         if len(file_path_list)<=Number_columns:
             ls_column=1
             x_lengh = ls_column * (picture_height+picture_interval)#原值166
