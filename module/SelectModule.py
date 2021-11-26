@@ -12,7 +12,6 @@ from module.CreateParameter import Create_Speed_reducer_kbr_series_1to1
 import copy
 from ui import Process_message
 #from module import source
-#from  pynput.mouse import Button, Controller
 
 
 
@@ -428,9 +427,7 @@ def Show3D(self, mode=0, file=None, aCompound=None):  # 生成3D mode控制显�
 
                 self.show = self.canva._display.DisplayColoredShape(aCompound, color="WHITE", update=True)
             self.canva._display.FitAll()
-            #self.mouse.position = (self.x, self.y)
-            #self.mouse.press(Button.left)
-            #self.mouse.release(Button.left)
+
 
         except Exception as e:
             pass
@@ -535,4 +532,9 @@ def Create_pix_name_dict(self,path=".\\Pic"):#----------------------------------
         self.splash.showMessage("资源加载中:" + "100%"+" 完成")
     except Exception as e:
         print(e)
+        pass
+
+def canvan_click(self):
+        #pyautogui.moveTo(x=self.x, y=self.y)
+        #pyautogui.click(x=None, y=None, clicks=1, interval=0.0, button='left', duration=0.0, tween=pyautogui.linear)
         pass

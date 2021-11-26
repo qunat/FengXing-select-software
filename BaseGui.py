@@ -12,7 +12,9 @@ from module.CreateParameter import *
 from PyQt5.QtCore import pyqtSignal
 from module.SelectModule import Process_message
 from ui import MainGui
-#from  pynput.mouse import Button, Controller
+
+
+
 
 
 # ------------------------------------------------------------开始初始化环境
@@ -97,10 +99,10 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         self.process_bar = Process_Bar()
         self.process_message = SelectModule.Process_message()
         self.process_message_word = Process_message_word()
-
         self.new_AboutDownload = AboutDownload()
         #self.mouse = Controller()
         self.centerOnScreen()
+        self.changeEvent_signal=0#白屏信号
 
         # ----------------------------------------------------------------------------------
         self.sinal = 0
@@ -134,7 +136,20 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         self.AboutDownload.triggered.connect(self.AboutDownload_)
         #--------------------------------------------------------------------------------------- 资料图片加载
 
-
+    def changeEvent(self, e):
+        if e.type() == QtCore.QEvent.WindowStateChange:
+            if self.isMinimized():
+                #print("窗口最小化")
+                pass
+            elif self.isMaximized():
+                #print("窗口最大化")
+                self.canva._display.ResetView()
+            elif self.isFullScreen():
+                #print("全屏显示")
+                pass
+            elif self.isActiveWindow():
+                #print("活动窗口")
+                pass
 
     def Create_pix_name_dict(self,splash):
         #SelectModule.Create_pix_name_dict(self=self,splash=splash)
@@ -269,6 +284,8 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
     def AboutDownload_(self):
         self.new_AboutDownload.show()
 
+    def canvan_click(self):
+        SelectModule.canvan_click(self=self)
 
 
 
@@ -357,10 +374,13 @@ if __name__ == '__main__':
         display.set_bg_gradient_color(background_gradient_color1, background_gradient_color2)
     win.raise_()  # make the application float to the top
     win.showMaximized()
+    #win.setWindowFlags(QtCore.Qt.WindowCloseButtonHint)
 
     try:
         win.splash.finish(win)
         pass
     except:
         pass
+    win.canvan_click()
+
     app.exec_()

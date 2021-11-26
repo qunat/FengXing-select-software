@@ -65,7 +65,7 @@ class Ui_MainWindow(MainGui.Ui_MainWindow):
         self.action_Fitall= self.add_action("全显","zoom-all","全显",True,self.View_fitall)
         self.action_Export_STP = self.add_action("导出STP", "Std_Export", "导出STP", True,partial(Output_stp_data,self=self))
         self.action_Export_IGES = self.add_action("导出IGES", "Std_Export", "导出IGES", True, partial(Output_iges_data,self=self))
-        self.action_Export_STL = self.add_action("导出STL", "Std_Export", "导出STL", True, Output_stl_data)
+        self.action_Export_STL = self.add_action("导出STL", "Std_Export", "导出STL", True,partial(Output_stl_data,self=self))
         self.action_Measure_distance_tool = self.add_action("距离测量", "view-measurement", "距离测量", True, partial(Measure_distance_fun,self=self))
         self.action_Measure_diameter_tool = self.add_action("孔径测量", "view-measurement", "孔径测量", True, partial(Measure_diameter_fun,self=self))
         self.action_download = self.add_action("下载更新", "download", "下载更新", True, partial(UP_date_software,self))
@@ -148,6 +148,8 @@ class Ui_MainWindow(MainGui.Ui_MainWindow):
         width = self.tabWidget_5.geometry().width() * X
         height = self.tabWidget_5.geometry().height() * Y-ribbin_offset_Y*Y
         self.tabWidget_5.setGeometry(QtCore.QRect(x, y, width, height))
+        self.tabWidget_5.setStyleSheet("background-color: rgb(176, 176, 176)")
+        #self.tableWidget_2.setStyleSheet("background-color: rgb(240, 240, 240)")
 
         #x = self.menubar.geometry().x() * X
         #y = self.menubar.geometry().y() * Y

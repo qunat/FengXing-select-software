@@ -60,57 +60,75 @@ def Output_stp_data(self,mode=1):  # 将数据转换成stp并导出
         #self.Translation_Assemble(self=self)
         #self.statusbar.showMessage("零件导出中......")
         path = "../" + self.filename
-        fileName, ok = QFileDialog.getSaveFileName(self, "文件保存", path, "All Files (*) (*.step)")
-        self.message.process_message_show()
-        QApplication.processEvents()
-        write_step_file(self.aCompound, fileName)
+        try:
+            fileName, ok = QFileDialog.getSaveFileName(self, "文件保存", path, "All Files (*) (*.step)")
+            if fileName!="":
+                self.message.process_message_show()
+                QApplication.processEvents()
+                write_step_file(self.aCompound, fileName)
+                self.message.close()
+        except:
+            pass
         self.save_part_path = fileName
         #self.Assemble_Rename()
         self.statusbar.showMessage("零件导出成功")
-        self.message.close()
+
 
     except:
         pass
         self.statusbar.showMessage("错误：没用模型可以导出")
 
 
-def Output_iges_data(self):  # 将数据转换成iges并导出
+def Output_iges_data(self,mode=1):  # 将数据转换成iges并导出
     try:
         pass
-        #self.Translation_Assemble(self=self)
-        #self.statusbar.showMessage("零件导出中......")
-        path = "./" + self.filename
-        fileName, ok = QFileDialog.getSaveFileName(self, "文件保存", path, "All Files (*) (*.iges)")
-        self.message.process_message_show()
-        QApplication.processEvents()
-        self.statusbar.showMessage("数据生成中请稍后......")
-        write_iges_file(self.aCompound, fileName)
+        # self.Translation_Assemble(self=self)
+        # self.statusbar.showMessage("零件导出中......")
+        self.filename=self.filename.split(".")[0]
+        path = "../" + self.filename
+        try:
+            fileName, ok = QFileDialog.getSaveFileName(self, "文件保存", path, "All Files (*) (*.iges)")
+            if fileName!="":
+                self.message.process_message_show()
+                QApplication.processEvents()
+                write_iges_file(self.aCompound, fileName)
+                self.message.close()
+        except:
+            pass
         self.save_part_path = fileName
+        # self.Assemble_Rename()
         self.statusbar.showMessage("零件导出成功")
-        self.message.close()
+
 
     except:
         pass
-        self.statusBar.showMessage('错误：没用模型可以导出')
+        self.statusbar.showMessage("错误：没用模型可以导出")
 
 
 def Output_stl_data(self):  # stl
     try:
         pass
-        #self.Translation_Assemble(self=self)
-        #self.statusbar.showMessage("零件导出中......")
-        path = "./" + self.filename
-        fileName, ok = QFileDialog.getSaveFileName(self, "文件保存", path, "All Files (*) (*.stl)")
-        self.message.process_message_show()
-        QApplication.processEvents()
-        write_stl_file(self.aCompound, fileName)
+        # self.Translation_Assemble(self=self)
+        # self.statusbar.showMessage("零件导出中......")
+        self.filename = self.filename.split(".")[0]
+        path = "../" + self.filename
+        try:
+            fileName, ok = QFileDialog.getSaveFileName(self, "文件保存", path, "All Files (*) (*.stl)")
+            if fileName!="":
+                self.message.process_message_show()
+                QApplication.processEvents()
+                write_stl_file(self.aCompound, fileName)
+                self.message.close()
+        except:
+            pass
         self.save_part_path = fileName
+        # self.Assemble_Rename()
         self.statusbar.showMessage("零件导出成功")
-        self.message.close()
+
 
     except:
         pass
-        self.statusBar.showMessage('错误：没用模型可以导出')
+        self.statusbar.showMessage("错误：没用模型可以导出")
 
 def Measure_distance_fun(self):
         pass
@@ -276,7 +294,10 @@ def UP_date_software(self, mode=1):  # mode=1 为GUI模式下载  mode=2 则为�
                 self.statusbar.showMessage("下载错误，请重新下载")
 
 def Quit_(self):  # 退出
-        self.close()
+        #self.close()
+        self.tab_7.update()
+        self.tab_7.focusWidget()
+        self.tab_7.show()
 
 
 def Open_file(self):

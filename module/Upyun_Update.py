@@ -20,6 +20,7 @@ class Ftp_Update():
                 self.cloude_name = words[5].replace("cloude_name=", "").strip("\n")  # 获取云端文件夹名字
                 f.close()
         except:
+            self.cloude_name="枫信传动"
             pass
     def Rename_path(self,string=""):
         try:
