@@ -143,7 +143,7 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
                 pass
             elif self.isMaximized():
                 #print("窗口最大化")
-                self.canva._display.ResetView()
+                self.canva._display.Repaint()
             elif self.isFullScreen():
                 #print("全屏显示")
                 pass

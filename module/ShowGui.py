@@ -148,7 +148,9 @@ class Ui_MainWindow(MainGui.Ui_MainWindow):
         width = self.tabWidget_5.geometry().width() * X
         height = self.tabWidget_5.geometry().height() * Y-ribbin_offset_Y*Y
         self.tabWidget_5.setGeometry(QtCore.QRect(x, y, width, height))
-        self.tabWidget_5.setStyleSheet("background-color: rgb(176, 176, 176)")
+        self.tab_3.setStyleSheet("background-color: rgb(176, 176, 176)")
+        self.tab_4.setStyleSheet("background-color: rgb(176, 176, 176)")
+        self.tab_8.setStyleSheet("background-color: rgb(176, 176, 176)")
         #self.tableWidget_2.setStyleSheet("background-color: rgb(240, 240, 240)")
 
         #x = self.menubar.geometry().x() * X
@@ -233,7 +235,8 @@ class Ui_MainWindow(MainGui.Ui_MainWindow):
 
         # ------------------------------------------------------------尺寸数据显示设置
         try:
-            self.pix = QPixmap('Pic/TBI.png')
+            pass
+            self.pix = QPixmap('Pic/FX.png')
             self.graphicsView = GraphicsView(self.pix, self.tab_8)
             self.graphicsView.setGeometry(QtCore.QRect(0, 0, 461 * self.width_scal, 581 * self.height_scal))
             self.graphicsView.setObjectName("graphicsView")

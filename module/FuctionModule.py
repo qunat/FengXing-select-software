@@ -12,10 +12,11 @@ from PyQt5.QtWidgets import QFileDialog, QMessageBox, QApplication
 import re,sys
 import  threading
 import os, shutil
-from multiprocessing import Process, Queue
+from multiprocessing import Process, Queue,cpu_count
 from module import Upyun_Update,assemble
 import webbrowser
 from OCC.Extend.DataExchange import read_iges_file
+import math
 
 
 def Translation_Assemble(self):  # 转换为装配体
@@ -294,10 +295,8 @@ def UP_date_software(self, mode=1):  # mode=1 为GUI模式下载  mode=2 则为�
                 self.statusbar.showMessage("下载错误，请重新下载")
 
 def Quit_(self):  # 退出
-        #self.close()
-        self.tab_7.update()
-        self.tab_7.focusWidget()
-        self.tab_7.show()
+        self.close()
+
 
 
 def Open_file(self):
@@ -330,3 +329,34 @@ def Open_file(self):
 
     except Exception as e:
         print(e)
+
+class speed_processing(Process):
+    def __init__(self,fun=None):
+        pass
+        self.Get_core_num()
+
+    def Get_core_num(self):
+        self.core_num=cpu_count()
+
+    def Create_multi_process(self,fun=None,queue=None):
+        self.args_list=queue.get()#计算参数数量
+        self.args_list_len = len(self.args_list)  # 计算参数数量
+        average_num=math.ceil(self.args_list_len/cpu_count())
+        p=[]
+        for i in range(self.core_num):
+            ls_args_list=[]
+            print(i)
+            for j in range(self.args_list_len):
+                if len(ls_args_list)==average_num:
+                    continue
+                ls_args_list.append(self.args_list[j])
+            try:
+                print(2222,ls_args_list)
+                p= Process(target=fun, args=(ls_args_list,))
+                print("ok")
+                p.start()
+            except Exception as e:
+                print(e)
+
+
+
