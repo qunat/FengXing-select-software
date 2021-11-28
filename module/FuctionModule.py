@@ -334,29 +334,30 @@ class speed_processing(Process):
     def __init__(self,fun=None):
         pass
         self.Get_core_num()
+        self.p={}
 
     def Get_core_num(self):
         self.core_num=cpu_count()
 
-    def Create_multi_process(self,fun=None,queue=None):
+    def Create_multi_process(self,fun=None,queue=None,pix_dict=None):
         self.args_list=queue.get()#计算参数数量
         self.args_list_len = len(self.args_list)  # 计算参数数量
         average_num=math.ceil(self.args_list_len/cpu_count())
-        p=[]
         for i in range(self.core_num):
             ls_args_list=[]
-            print(i)
-            for j in range(self.args_list_len):
-                if len(ls_args_list)==average_num:
-                    continue
-                ls_args_list.append(self.args_list[j])
             try:
-                print(2222,ls_args_list)
-                p= Process(target=fun, args=(ls_args_list,))
-                print("ok")
-                p.start()
+                for j in self.args_list:
+                    if len(ls_args_list) == average_num:
+                        continue
+                    ls_args_list.append(j)
+                    self.args_list.remove(j)
+                print(i,ls_args_list)
+                self.p[i] = Process(target=fun, args=(ls_args_list,pix_dict,))
+                self.p[i].start()
             except Exception as e:
                 print(e)
+                pass
+
 
 
 

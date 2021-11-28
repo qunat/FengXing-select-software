@@ -1155,6 +1155,7 @@ class Create_Speed_reducer_kb_series(Create_Speed_reducer_kbr_series_1to1):#
         self.dB={'KB60': '≤58', 'KB90': '≤60', 'KB115': '≤65', 'KB142': '≤70', 'KB180': '≤70', 'KB220': '≤75', 'KB280': '≤75', 'KB340': '≤75', 'KB400': '≤75'}
 
         #减速机转动惯量
+
         self.Moment_inertia={"L1":{"3":{'KB60': '0.18', 'KB90': '0.75', 'KB115': '2.85', 'KB142': '12.4', 'KB180': '15.3', 'KB220': '34.8', 'KB280': '44.9', 'KB340': '80', 'KB400': '255'},
                                   "4":{'KB60': '0.18', 'KB90': '0.75', 'KB115': '2.85', 'KB142': '12.4', 'KB180': '15.3', 'KB220': '34.8', 'KB280': '44.9', 'KB340': '80', 'KB400': '255'},
                                   "5":{'KB60': '0.18', 'KB90': '0.75', 'KB115': '2.85', 'KB142': '12.4', 'KB180': '15.3', 'KB220': '34.8', 'KB280': '44.9', 'KB340': '80', 'KB400': '255'},
@@ -1219,9 +1220,7 @@ class Create_Speed_reducer_kb_series(Create_Speed_reducer_kbr_series_1to1):#
                             "使用寿命(h)": 20000, "效率(%)": "72%", "噪音(DB)": "≤68", "重量(Kg)": 2.5, "使用温度": "-20℃-90℃",
                             }  #
 
-
-
-        self.KB_series_dict = {"KB60":self.KB60_dict,"KB90":self.KB90_dict,"KBR115":self.KBR115_dict,"KB142":self.KB142_dict,"KBR180":self.KB180_dict,
+        self.KB_series_dict = {"KB60":self.KB60_dict,"KB90":self.KB90_dict,"KB115":self.KB115_dict,"KB142":self.KB142_dict,"KB180":self.KB180_dict,
                                 "KB220":self.KB220_dict,"KB280":self.KB280_dict,"KB340":self.KB340_dict,"KB400":self.KB400_dict
                                 }
         self.series = self.KB_series_dict
@@ -1245,3 +1244,22 @@ class Create_Speed_reducer_kb_series(Create_Speed_reducer_kbr_series_1to1):#
         all_combox_list.append(["订购码", "-"])
 
         return all_combox_list
+    def Get_resourcr_list(self):
+        try:
+            pass
+            path_list = []
+            for root, dirs, files in os.walk(".\\resource\\KB", topdown=False):
+                for i in files:
+                    path = os.path.join(root, i)
+                    path_list.append(path)
+                path_list.insert(0, "-")
+                self.path_list.append(path_list)
+                path_list = []
+            for j in self.path_list:
+                for i in j:
+                    ls_kind = i.split("\\")[-1]
+                    ls_kind = ls_kind.split("-")[0]
+                self.path_dict[ls_kind] = j
+
+        except Exception as e:
+            print(e)

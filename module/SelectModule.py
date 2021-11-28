@@ -12,7 +12,8 @@ from module.CreateParameter import Create_Speed_reducer_kbr_series_1to1
 import copy
 from ui import Process_message
 #from module import source
-from multiprocessing import  Queue
+from multiprocessing import  Queue,Manager
+from module import FuctionModule
 
 
 
@@ -131,9 +132,8 @@ def Ceate_combox_table(self, ButtonId=None):  # 生成选项卡表格   步骤�
 
             #----------------------------------------------------------------KB系列
             if ButtonId in ["KB系列"]:
-                print(114)
                 self.boll_SCcrew = Create_Speed_reducer_kb_series()#建立类
-                print(115)
+
 
 
             all_combox_list = self.boll_SCcrew.Create_combox_list()
@@ -269,15 +269,16 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
 
             series_1 = self.combox_current_text_list[1]  # 段数
             series_2=self.combox_current_text_list[2] #减速比
+
             #series_3 = self.boll_SCcrew.series[str(series)]  # 机座号选型列表
             dict["额定输出扭矩T2N(Nm)"] = self.boll_SCcrew.T2N[series_1][series_2][series]
             dict["最大输出扭矩(Nm)"] = str(float(self.boll_SCcrew.T2N[series_1][series_2][series])*2)
             dict["额定输入转速(rpm)"] = self.boll_SCcrew.n1N[str(series)]
             dict["最大输入转速(rpm)"] = self.boll_SCcrew.n1B[str(series)]
-            dict["背隙"] = self.boll_SCcrew.arcmin[self.combox_current_text_list[4]][series_1][series_2]
+            dict["背隙"] = self.boll_SCcrew.arcmin[self.combox_current_text_list[4]][series_1][series]
             dict["容许径向力(N)"] = self.boll_SCcrew.F1[str(series)]
             dict["容许轴向力(N)"] = self.boll_SCcrew.F2[str(series)]
-            dict["效率(%)"] = self.boll_SCcrew.power[str(series_1)][series_2]
+            dict["效率(%)"] = self.boll_SCcrew.power[str(series_1)][series]
             dict["噪音(DB)"] = self.boll_SCcrew.dB[str(series)]
             dict["重量(Kg)"] = self.boll_SCcrew.weight[series_1][series]
             dict["减速局转动惯量(kg.cm2)"] = self.boll_SCcrew.Moment_inertia[series_1][series_2][series]
@@ -360,10 +361,12 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
             self.tableWidget_2.setSpan(self.order_code_position, 1, 1, 2)
             self.tableWidget_2.setItem(self.order_code_position, 1, newItem)  # 设置订购码
 
-        if self.ButtonId in ["KBR系列(1-1)", "KBR系列(1-2)"]:  # 设置订购码
+        if self.ButtonId in ["KBR系列(1-1)", "KBR系列(1-2)","KB系列"]:  # 设置订购码
             try:
-
-                series = "KBR" + self.combox_list[1].currentText() + "-"  # 系列号和机座代号
+                if self.ButtonId=="KB系列":
+                    series = "KB" + self.combox_list[1].currentText() + "-"  # 系列号和机座代号
+                else:
+                    series = "KBR" + self.combox_list[1].currentText() + "-"  # 系列号和机座代号
                 Deceleration_ratio = self.combox_list[3].currentText() + "-"  # 减速比
                 Deceleration_ratio = self.combox_list[2].currentText() + "-"  # 段数
                 Rotating_shaft = self.combox_list[3].currentText()[0:2] + "-"  # 减速比
@@ -471,7 +474,7 @@ def Show3D(self, mode=0, file=None, aCompound=None):  # 生成3D mode控制显�
             self.statusbar.showMessage("没有此零件")
             
 def combox_refresh_function(self):#根据comcox改变combox
-    if self.ButtonId in ["KBR系列(1-1)", "KBR系列(1-2)"]:
+    if self.ButtonId in ["KBR系列(1-1)", "KBR系列(1-2)","KB系列"]:
         Reduction_ratio = self.boll_SCcrew.lever[self.combox_list[2].currentText()]
         self.combox_list[3].clear()
         self.combox_list[3].addItems(Reduction_ratio)  # 根据选项变换combox里的内容
@@ -498,6 +501,20 @@ def show_technical_information(self):
         elif series in ["KBR280","KBR340"]:
             pix_name_1 = "KBR-4"
             pix_name_2 = "KBR-4"
+    elif ButtonId in ["KB系列"]:
+        series = "KB" + self.combox_list[1].currentText()  # 机座号
+        if series in ["KB60","KB90"]:
+            pix_name_1 = "KB-1"
+            pix_name_2 = "KB-1"
+        elif series in ["KB115","KB142"]:
+            pix_name_1 = "KB-2"
+            pix_name_2 = "KB-2"
+        elif series in ["KB180","KB220"]:
+            pix_name_1 = "KB-3"
+            pix_name_2 = "KB-3"
+        elif series in ["KB280","KB340"]:
+            pix_name_1 = "KB-4"
+            pix_name_2 = "KB-4"
     # ----------2D显示图片操作 技术资料（1）----------------
     try:
         pix_name = ButtonId  # 2D
@@ -545,11 +562,13 @@ def show_technical_information(self):
         self.graphicsView.show()
     except:
         pass
-def Create_pix_name_dict_fun(queue):
-            print(666)
-            for x in queue:
-                print(x)
-                pix_dict = QPixmap("./" + 'Pic/' + x + ".png")
+
+
+
+def Create_pix_name_dict_fun(pix_name,self):
+            self.pix_dict[pix_name] =QPixmap("./"+'Pic/' + pix_name + ".png")
+
+
 
 
 def Create_pix_name_dict(self,path=".\\Pic"):#--------------------------------------------------- 资料图片加载
@@ -568,15 +587,20 @@ def Create_pix_name_dict(self,path=".\\Pic"):#----------------------------------
                         continue
                     pix_name = i.replace(".png", "")
                     pix_list.append(pix_name)
-                    #self.pix_dict[pix_name] = QPixmap("./"+'Pic/' + pix_name + ".png")
+                    self.pix_dict[pix_name] = QPixmap("./"+'Pic/' + pix_name + ".png")
                     index+=1
                     compplete_percent=str(int(index/all_number*100))+"%"
                     self.splash.showMessage("资源加载中:"+compplete_percent+"  "+i)
+                break
+        '''
+        尝试多进程失败
         queue=Queue()
         queue.put(pix_list)
-        from module import FuctionModule
+        manager=Manager()
+        pix_dict=manager.dict()
         new_speed=FuctionModule.speed_processing()
-        new_speed.Create_multi_process(Create_pix_name_dict_fun,queue)
+        new_speed.Create_multi_process(Create_pix_name_dict_fun,queue,pix_dict)
+        '''
         self.splash.showMessage("资源加载中:" + "100%"+" 完成")
     except Exception as e:
         print(e)
