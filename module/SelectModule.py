@@ -1,4 +1,6 @@
 #coding=utf-8
+from functools import partial
+
 from OCC.Core.Quantity import Quantity_Color, Quantity_TOC_RGB
 from OCC.Core.TopoDS import TopoDS_Compound
 from OCC.Extend.DataExchange import read_step_file_with_names_colors
@@ -358,7 +360,10 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
             newItem.setBackground(QtGui.QBrush(QtGui.QColor(240, 255, 191)))  # 设置背景颜色
             newItem.setFont(QFont("微软雅黑", 8, QFont.Black))
             newItem.setForeground(QBrush(QtGui.QColor(0, 0, 0)))
-            self.tableWidget_2.setSpan(self.order_code_position, 1, 1, 2)
+            #self.tableWidget_2.setSpan(self.order_code_position, 1, 1, 2)#合并单元格
+            self.copy_buttom = QtWidgets.QPushButton("复制")
+            self.copy_buttom.clicked.connect(partial(order_code_copy, series))
+            self.tableWidget_2.setCellWidget(self.order_code_position, 2, self.copy_buttom)
             self.tableWidget_2.setItem(self.order_code_position, 1, newItem)  # 设置订购码
 
         if self.ButtonId in ["KBR系列(1-1)", "KBR系列(1-2)","KB系列"]:  # 设置订购码
@@ -382,7 +387,10 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
             newItem.setBackground(QtGui.QBrush(QtGui.QColor(240, 255, 191)))  # 设置背景颜色
             newItem.setFont(QFont("微软雅黑", 8, QFont.Black))
             newItem.setForeground(QBrush(QtGui.QColor(0, 0, 0)))
-            self.tableWidget_2.setSpan(self.order_code_position, 1, 1, 2)
+            #self.tableWidget_2.setSpan(self.order_code_position, 1, 1, 2)#合并单元格
+            self.copy_buttom=QtWidgets.QPushButton("复制")
+            self.copy_buttom.clicked.connect(partial(order_code_copy, series))
+            self.tableWidget_2.setCellWidget(self.order_code_position,2,self.copy_buttom)
             self.tableWidget_2.setItem(self.order_code_position, 1, newItem)  # 设置订购码
 
             # ----------显示3D-------------------------------------------------------------------
@@ -608,3 +616,7 @@ def Create_pix_name_dict(self,path=".\\Pic"):#----------------------------------
 
 def canvan_click(self):
         pass
+
+def order_code_copy(series):
+    clipboard = QApplication.clipboard()
+    clipboard.setText(series)

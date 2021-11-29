@@ -324,7 +324,7 @@ class Ui_MainWindow(MainGui.Ui_MainWindow):
 
         #widget = QtWidgets.QWidget(tab)
         widget.setGeometry(QtCore.QRect(0, 0, 781*X, fun(800,x_lengh)*Y))
-        widget.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+        widget.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         widget.setStyleSheet("background-color: rgb(216, 216, 216);")
         widget.setObjectName("widget")
         # 判断是否需要有滑条

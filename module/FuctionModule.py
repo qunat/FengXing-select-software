@@ -351,7 +351,7 @@ class speed_processing(Process):
                         continue
                     ls_args_list.append(j)
                     self.args_list.remove(j)
-                print(i,ls_args_list)
+                #print(i,ls_args_list)
                 self.p[i] = Process(target=fun, args=(ls_args_list,pix_dict,))
                 self.p[i].start()
             except Exception as e:
