@@ -17,6 +17,7 @@ from ui import MainGui
 
 
 
+
 # ------------------------------------------------------------开始初始化环境
 log = logging.getLogger(__name__)
 
@@ -49,7 +50,7 @@ if os.getenv("PYTHONOCC_OFFSCREEN_RENDERER") == "1":
         log.info("done")
     # returns empty classes and functions
 used_backend = load_backend(backend_str)
-log.info("GUI backend set to: %s", used_backend)
+#log.info("GUI backend set to: %s", used_backend)
 # ------------------------------------------------------------初始化结束
 from PyQt5.QtGui import QIcon, QPixmap
 
@@ -289,7 +290,6 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
 
 
 
-
 class AboutDownload(QtWidgets.QMainWindow, AboutDownload.Ui_Form):
     def __init__(self, parent=None):
         super(AboutDownload, self).__init__(parent)
@@ -324,6 +324,8 @@ class Process_Bar(QtWidgets.QMainWindow, ProcessBar.Ui_Form):  # 下载处理进
                     self.label_5.setText("链接成功，正在下载")
                 self.progressBar.setValue(int(percent))
                 speed = speed_list[-1]
+                if speed==0:
+                    continue
 
                 if speed < 1:
                     ls_speed = speed * 1024
@@ -363,8 +365,9 @@ if __name__ == '__main__':
     win.show()
     win.centerOnScreen()
     win.canva.InitDriver()
-    win.resize(size[0], size[1])
+    #win.resize(size[0], size[1])
     win.canva.qApp = app
+    win.showMaximized()
 
     display = win.canva._display
     display.display_triedron()
@@ -373,7 +376,7 @@ if __name__ == '__main__':
         # background gradient
         display.set_bg_gradient_color(background_gradient_color1, background_gradient_color2)
     win.raise_()  # make the application float to the top
-    win.showMaximized()
+
     #win.setWindowFlags(QtCore.Qt.WindowCloseButtonHint)
 
     try:

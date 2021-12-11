@@ -1,6 +1,5 @@
 #coding=utf-8
 from functools import partial
-
 from OCC.Core.Quantity import Quantity_Color, Quantity_TOC_RGB
 from OCC.Core.TopoDS import TopoDS_Compound
 from OCC.Extend.DataExchange import read_step_file_with_names_colors
@@ -11,14 +10,17 @@ from PyQt5.QtGui import QFont, QBrush, QPixmap, QMovie
 from graphics import GraphicsView, GraphicsPixmapItem
 from module.CreateParameter import *
 from module.CreateParameter import Create_Speed_reducer_kbr_series_1to1
-import copy
+import copy,time,sys
 from ui import Process_message
 #from module import source
 from multiprocessing import  Queue,Manager
 from module import FuctionModule
 
 
-
+def test(func):
+    def inner():
+        print('running')
+    return inner
 
 class Process_message(QtWidgets.QMainWindow, Process_message.Ui_Form):  # 零件加载过程界面
     def __init__(self, parent=None):
@@ -78,7 +80,7 @@ def Create_ProcessBar(self, ButtonId=None):  # 过程处理函数 获取数据�
                     if self.combox_list.index(i)==1:
                         i.currentTextChanged.connect(self.show_technical_information)#根据combox内容刷新技术资料
                     i.currentTextChanged.connect(self.Ceate_product_parameter_table_and_show_3d)#刷新
-            if ButtonId in ["KBR系列(1-1)","KBR系列(1-2)","KB系列"] :
+            elif ButtonId in ["KBR系列(1-1)","KBR系列(1-2)","KB系列"] :
                 self.ButtonId = ButtonId
                 self.Ceate_combox_table(ButtonId)#建立
                 # 将所有的combox 选项和型号槽绑定 只要选项更新就会选项产品参数
@@ -92,6 +94,21 @@ def Create_ProcessBar(self, ButtonId=None):  # 过程处理函数 获取数据�
                     if self.combox_list.index(i)==1:
                         i.currentTextChanged.connect(self.show_technical_information)#根据combox内容刷新技术资料
                     i.currentTextChanged.connect(self.Ceate_product_parameter_table_and_show_3d)#刷新
+            elif ButtonId in ["EDA系列"] :
+                self.ButtonId = ButtonId
+                self.Ceate_combox_table(ButtonId)#建立
+                # 将所有的combox 选项和型号槽绑定 只要选项更新就会选项产品参数
+                for i in self.combox_list:
+                    if self.combox_list.index(i)==7:
+                        i.currentTextChanged.connect(self.Ceate_show_3d)#刷新
+                        continue
+                    if self.combox_list.index(i)==2:
+                        i.currentTextChanged.connect(self.combox_refresh_function)#根据combox内容刷新combox刷新
+                        continue
+                    if self.combox_list.index(i)==1:
+                        i.currentTextChanged.connect(self.show_technical_information)#根据combox内容刷新技术资料
+                    i.currentTextChanged.connect(self.Ceate_product_parameter_table_and_show_3d)#刷新
+                    pass
             self.sinal = 1
             self.message.process_message_show()
         except Exception as e:
@@ -136,6 +153,9 @@ def Ceate_combox_table(self, ButtonId=None):  # 生成选项卡表格   步骤�
             if ButtonId in ["KB系列"]:
                 self.boll_SCcrew = Create_Speed_reducer_kb_series()#建立类
 
+            #----------------------------------------------------------------EDA系列
+            if ButtonId in ["EDA系列"]:
+                self.boll_SCcrew = Create_transformer_EDA_series()#建立类
 
 
             all_combox_list = self.boll_SCcrew.Create_combox_list()
@@ -254,7 +274,7 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
             dict["效率(%)"] = self.boll_SCcrew.power[str(series_1)][series_2]
             dict["噪音(DB)"] = self.boll_SCcrew.dB[str(series)]
             dict["重量(Kg)"] = self.boll_SCcrew.weight[series_1][series]
-            dict["减速局转动惯量(kg.cm2)"] = self.boll_SCcrew.Moment_inertia[series_1][series_2][series]
+            dict["减速机转动惯量(kg.cm2)"] = self.boll_SCcrew.Moment_inertia[series_1][series_2][series]
 
 
         elif self.ButtonId in ["KB系列"]:
@@ -283,7 +303,7 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
             dict["效率(%)"] = self.boll_SCcrew.power[str(series_1)][series]
             dict["噪音(DB)"] = self.boll_SCcrew.dB[str(series)]
             dict["重量(Kg)"] = self.boll_SCcrew.weight[series_1][series]
-            dict["减速局转动惯量(kg.cm2)"] = self.boll_SCcrew.Moment_inertia[series_1][series_2][series]
+            dict["减速机转动惯量(kg.cm2)"] = self.boll_SCcrew.Moment_inertia[series_1][series_2][series]
 
         dict_list = []
         self.tableWidget_2.setRowCount(len(dict) + len(self.combox_list))  # 参数表格设置.
@@ -361,8 +381,8 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
             newItem.setFont(QFont("微软雅黑", 8, QFont.Black))
             newItem.setForeground(QBrush(QtGui.QColor(0, 0, 0)))
             #self.tableWidget_2.setSpan(self.order_code_position, 1, 1, 2)#合并单元格
-            self.copy_buttom = QtWidgets.QPushButton("复制")
-            self.copy_buttom.clicked.connect(partial(order_code_copy, series))
+            self.copy_buttom = QtWidgets.QPushButton("复制订购码")
+            self.copy_buttom.clicked.connect(partial(order_code_copy, series,self))
             self.tableWidget_2.setCellWidget(self.order_code_position, 2, self.copy_buttom)
             self.tableWidget_2.setItem(self.order_code_position, 1, newItem)  # 设置订购码
 
@@ -375,7 +395,7 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
                 Deceleration_ratio = self.combox_list[3].currentText() + "-"  # 减速比
                 Deceleration_ratio = self.combox_list[2].currentText() + "-"  # 段数
                 Rotating_shaft = self.combox_list[3].currentText()[0:2] + "-"  # 减速比
-                Out_Flanges = self.combox_list[4].currentText()[0] + "-"  # 轴型
+                Out_Flanges = self.combox_list[4].currentText()[0:2] + "-"  # 轴型
                 Fixt_mode = self.combox_list[5].currentText()[0:2] + "/"  # 背隙
                 Motor_type = self.combox_list[6].currentText()[0:1]  # 电机类型
                 series = series + Deceleration_ratio + Rotating_shaft + Out_Flanges + Fixt_mode + Motor_type
@@ -388,8 +408,8 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
             newItem.setFont(QFont("微软雅黑", 8, QFont.Black))
             newItem.setForeground(QBrush(QtGui.QColor(0, 0, 0)))
             #self.tableWidget_2.setSpan(self.order_code_position, 1, 1, 2)#合并单元格
-            self.copy_buttom=QtWidgets.QPushButton("复制")
-            self.copy_buttom.clicked.connect(partial(order_code_copy, series))
+            self.copy_buttom=QtWidgets.QPushButton("复制订购码")
+            self.copy_buttom.clicked.connect(partial(order_code_copy, series,self))
             self.tableWidget_2.setCellWidget(self.order_code_position,2,self.copy_buttom)
             self.tableWidget_2.setItem(self.order_code_position, 1, newItem)  # 设置订购码
 
@@ -573,9 +593,17 @@ def show_technical_information(self):
 
 
 
-def Create_pix_name_dict_fun(pix_name,self):
-            self.pix_dict[pix_name] =QPixmap("./"+'Pic/' + pix_name + ".png")
-
+def Create_pix_naime_dict_fun(pix_name,return_queue):
+    app = QtWidgets.QApplication(sys.argv)
+    #widget = QtWidgets.QWidget()
+    pix_dict = {}
+    for i in pix_name:
+        try:
+            pix_dict[i] = QPixmap("./"+'Pic/' + i + ".png")
+        except Exception as e:
+            print(e)
+    #return_queue.put(pix_dict)
+    print(return_queue)
 
 
 
@@ -587,6 +615,7 @@ def Create_pix_name_dict(self,path=".\\Pic"):#----------------------------------
         all_number=0
         compplete_percent=0
         pix_list=[]
+        start_time = time.time()
         for root, dirs, files in os.walk(".\\Pic", topdown=False):
             if root == ".\\Pic":
                 all_number=len(files)
@@ -600,15 +629,19 @@ def Create_pix_name_dict(self,path=".\\Pic"):#----------------------------------
                     compplete_percent=str(int(index/all_number*100))+"%"
                     self.splash.showMessage("资源加载中:"+compplete_percent+"  "+i)
                 break
+
         '''
         尝试多进程失败
         queue=Queue()
+        return_queue=Queue()
         queue.put(pix_list)
         manager=Manager()
-        pix_dict=manager.dict()
+        pix_dict=manager.list()
         new_speed=FuctionModule.speed_processing()
-        new_speed.Create_multi_process(Create_pix_name_dict_fun,queue,pix_dict)
+        new_speed.Create_multi_process(Create_pix_naime_dict_fun,queue,return_queue)
         '''
+        end_time = time.time()
+        print(end_time - start_time)
         self.splash.showMessage("资源加载中:" + "100%"+" 完成")
     except Exception as e:
         print(e)
@@ -617,6 +650,8 @@ def Create_pix_name_dict(self,path=".\\Pic"):#----------------------------------
 def canvan_click(self):
         pass
 
-def order_code_copy(series):
+def order_code_copy(series,self):
     clipboard = QApplication.clipboard()
     clipboard.setText(series)
+    self.statusbar.showMessage("复制成功")
+

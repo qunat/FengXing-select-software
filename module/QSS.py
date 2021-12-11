@@ -1,9 +1,18 @@
-butstyle='''
-            QPushButton{color:rgb(0,0,0)}s
-            QPushButton{background-color:rgb(238, 238, 238)}
+butstyle = '''
+
+            QPushButton{background-color:rgb(255, 255, 255)}
             QPushButton:hover{background-color:rgb(85, 170, 255)} 
-            #QPushButton{border-radius:6px}
             QPushButton:pressed{background-color:rgb(180,180,180);border: None;}
+            QPushButton{border:none;}
+            QPushButton{box-shadow: 0px 1px 3px rgb(34, 25, 25, 0.2);}
+            '''
+butstyle_ = '''
+
+            QPushButton{background-color:rgb(225, 225, 225)}
+            QPushButton:hover{background-color:rgb(85, 170, 255)} 
+            QPushButton:pressed{background-color:rgb(180,180,180);border: None;}
+            QPushButton{border:none;}
+            QPushButton{box-shadow: 0px 1px 3px rgb(34, 25, 25, 0.2);}
             '''
 
 butstyle_1="""
@@ -46,3 +55,7 @@ tabwidget="""
                 "    color:white;"
                 "}
             """
+Tree_pushbutton='''
+    QPushButton{border:none;color:white;}
+    
+'''

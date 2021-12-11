@@ -463,8 +463,10 @@ class Ui_MainWindow(MainGui.Ui_MainWindow):
         #---------------------------------------------------
         #设置butthon字体
         font = QtGui.QFont()
-        font.setFamily("华文仿宋")
-        font.setPointSize(12)
+        font.setFamily("微软雅黑")
+        font.setPointSize(10)
+        qss_dict={1:butstyle,-1:butstyle_}
+        qss_kind=1
         #循环建立pubutton
         for i in range(len(file_path_list)):
             if "." in file_path_list[i]:
@@ -473,13 +475,12 @@ class Ui_MainWindow(MainGui.Ui_MainWindow):
             self.pushButton[file_path_list[i]] = QtWidgets.QPushButton(self.formLayoutWidget_Tree_2)
             self.pushButton[file_path_list[i]].setMinimumSize(QtCore.QSize(90, 30))
             self.pushButton[file_path_list[i]].setFont(font)
-            self.pushButton[file_path_list[i]].setStyleSheet(
-                "border:none;background-color: qlineargradient(spread:pad, x1:0.336, y1:1, x2:0.54, y2:0, stop:0 rgba(155, 155, 155, 255), stop:1 rgba(255, 255, 255, 255));\n"
-                "")
+            #self.pushButton[file_path_list[i]].setStyleSheet(Tree_pushbutton)
             self.pushButton[file_path_list[i]].setObjectName(file_path_list[i])
             self.formLayout_Tree_2.setWidget(i, QtWidgets.QFormLayout.FieldRole, self.pushButton[file_path_list[i]])
             self.pushButton[file_path_list[i]].setText(file_path_list[i])
-            self.pushButton[file_path_list[i]].setStyleSheet(butstyle)
+            self.pushButton[file_path_list[i]].setStyleSheet(qss_dict[qss_kind])
+            qss_kind=qss_kind*-1
 
 
 
