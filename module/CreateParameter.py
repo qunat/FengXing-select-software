@@ -1547,8 +1547,8 @@ class Create_transformer_EDA_series(Create_Speed_reducer_kbr_series_1to1):#
         all_combox_list.append(["机型代号", "EDA"])
         dict_combox = {"机座号": combox_list}  #
         all_combox_list.append(dict_combox)  # 机型代号
-        all_combox_list.append({"结构":["","L:直连","R:折返"]})
-        all_combox_list.append({"电缸安装方式": ["-","01:前法兰","02:后法兰","03:耳轴","04:侧法兰","05:后铰接","06:导柱式","07:前锁型","08:非标定制"]})
+        all_combox_list.append({"结构":[" ","L:直连","R:折返"]})
+        all_combox_list.append({"电缸安装方式": [" ","01:前法兰","02:后法兰","03:耳轴","04:侧法兰","05:后铰接","06:导柱式","07:前锁型","08:非标定制"]})
         all_combox_list.append({"导程": ["  ", "05","10","16","20","25","32","40"]})
         all_combox_list.append({"行程": ["  ", ""]})
         all_combox_list.append({"减速比": ["  ", "D010:1:1","D030:1:3","D040:1:4","D050:1:5","D070:1:7",":1:100","D200:1:200"]})

@@ -7,6 +7,7 @@ import upyun,re
 import copy,time
 import shutil
 from multiprocessing import queues
+from module.FuctionModule import *
 
 
 """ZuSYm45YqESN7xas8Eng3C58v5gDDsN2"""#密码
@@ -216,12 +217,29 @@ class Ftp_Update():
             pass
             print(e)
 
+    def deco(fun):
+        def inner(*args, **kwargs):
+            start_time = time.time()
+            ret = fun(*args, **kwargs)
+            end_time = time.time()
+            print(end_time - start_time)
+        return inner
 
+    @deco
+    def Get_file_list(self,path):
+        try:
+            file_path="枫信传动/resource/"+path
+            res = self.up.getlist(file_path)
+            file_lsit=[x["name"] for x in res]
+            return file_lsit
+        except:
+            pass
 
 if __name__ == "__main__":
     pass
     new_ftp = Ftp_Update()
     print(new_ftp.cloude_name)
+    new_ftp.Get_file_list("EDA/EDA40/3D")
     #new_ftp.Check_dir()
     #new_ftp.OutPut_all_file_path()
 

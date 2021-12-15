@@ -53,7 +53,6 @@ used_backend = load_backend(backend_str)
 #log.info("GUI backend set to: %s", used_backend)
 # ------------------------------------------------------------初始化结束
 from PyQt5.QtGui import QIcon, QPixmap
-
 QtCore, QtGui, QtWidgets, QtOpenGL = get_qt_modules()
 from PyQt5.QtWidgets import QApplication
 import sys
@@ -255,8 +254,8 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
 
 
     def get_now_vision(self):
-        ftp_serve = Upyun_Update.Ftp_Update()
-        ftp_serve.Down_load_file("serve/serve.ini")
+        self.ftp_serve = Upyun_Update.Ftp_Update()
+        self.ftp_serve.Down_load_file("serve/serve.ini")
         with open("./serve/serve.ini", "r") as f:
             words = f.readlines()
             self.now_vision = words[0].replace("vision=", "").strip("\n")

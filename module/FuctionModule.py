@@ -16,7 +16,16 @@ from multiprocessing import Process, Queue,cpu_count
 from module import Upyun_Update,assemble
 import webbrowser
 from OCC.Extend.DataExchange import read_iges_file
-import math
+import math,time
+
+def deco(fun):
+    def inner(*args,**kwargs):
+        start_time=time.time()
+        ret=fun(*args,**kwargs)
+        end_time=time.time()
+        print(end_time-start_time)
+        return ret
+    return inner
 
 
 def Translation_Assemble(self):  # 转换为装配体
