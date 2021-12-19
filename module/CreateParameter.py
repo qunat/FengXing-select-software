@@ -1472,9 +1472,9 @@ class Create_Speed_reducer_fkm_series(Create_Speed_reducer_kbr_series_1to1):#
         except Exception as e:
             print(e)
 class Create_transformer_EDA_series(Create_Speed_reducer_kbr_series_1to1):#
-    def __init__(self):
+    def __init__(self,file_list):
         pass
-
+        self.file_list=file_list
         self.EDA40_dict = {"选型标准":"",'推力(Kg)': '≤50', '最大行程(mm)': '≤300', '速度(mm/s)': '≤800', '丝杆直径(mm)': 'Φ12',
                            '推杆直径(mm)': 'Φ20',
                           "技术参数说明":"","缸径(mm)":30,"行程(mm)":"0-300","丝杆型号/品牌":"1204/TBI","丝杆导程":"04/05",
@@ -1537,7 +1537,7 @@ class Create_transformer_EDA_series(Create_Speed_reducer_kbr_series_1to1):#
                                 }
         self.series = self.EDA_series_dict
     def Create_combox_list(self):
-        self.Get_resourcr_list()
+        lead_list,move_distance_list,Reduction_ratio_list,power_list=self.Get_resourcr_list()
         combox_list = []  # 单个选型的列,
         all_combox_list = []  # 所有不同选项的列表
         for i in self.series.keys():
@@ -1549,10 +1549,10 @@ class Create_transformer_EDA_series(Create_Speed_reducer_kbr_series_1to1):#
         all_combox_list.append(dict_combox)  # 机型代号
         all_combox_list.append({"结构":[" ","L:直连","R:折返"]})
         all_combox_list.append({"电缸安装方式": [" ","01:前法兰","02:后法兰","03:耳轴","04:侧法兰","05:后铰接","06:导柱式","07:前锁型","08:非标定制"]})
-        all_combox_list.append({"导程": ["  ", "05","10","16","20","25","32","40"]})
-        all_combox_list.append({"行程": ["  ", ""]})
-        all_combox_list.append({"减速比": ["  ", "D010:1:1","D030:1:3","D040:1:4","D050:1:5","D070:1:7",":1:100","D200:1:200"]})
-        all_combox_list.append({"电机功率": ["  ", "K100:100W","K200:200W","K1000:1000W"]})
+        all_combox_list.append({"导程": lead_list})
+        all_combox_list.append({"行程": move_distance_list})
+        all_combox_list.append({"减速比": Reduction_ratio_list})
+        all_combox_list.append({"电机功率": power_list})
         all_combox_list.append({"电机转速": ["  ", "15r/m", "30r/m"]})
         all_combox_list.append({"感应器数量": ["  ","S0:无","S1:一个","S2:两个"]})
         all_combox_list.append({"可选模型": ["-"]})
@@ -1561,20 +1561,25 @@ class Create_transformer_EDA_series(Create_Speed_reducer_kbr_series_1to1):#
         return all_combox_list
     def Get_resourcr_list(self):
         try:
-            pass
-            path_list = []
-            for root, dirs, files in os.walk(".\\resource\\KB", topdown=False):
-                for i in files:
-                    path = os.path.join(root, i)
-                    path_list.append(path)
-                path_list.insert(0, "-")
-                self.path_list.append(path_list)
-                path_list = []
-            for j in self.path_list:
-                for i in j:
-                    ls_kind = i.split("\\")[-1]
-                    ls_kind = ls_kind.split("-")[0]
-                self.path_dict[ls_kind] = j
 
+            move_distance_list=[]#行程
+            lead_list=[]#导程
+            Reduction_ratio_list=[]#减速比
+            power_list=[]#功率
+            for file_name in self.file_list:
+                file_name=file_name.split(".")
+                file_name=file_name[0].split("-")
+                if not file_name[2] in lead_list:
+                    lead_list.append(file_name[2])
+                if not file_name[3] in move_distance_list:
+                    move_distance_list.append(file_name[3])
+                if not file_name[4] in Reduction_ratio_list:
+                    Reduction_ratio_list.append(file_name[4])
+                if not file_name[5] in power_list:
+                    power_list.append(file_name[5])
+
+
+
+            return lead_list,move_distance_list,Reduction_ratio_list,power_list
         except Exception as e:
             print(e)

@@ -155,8 +155,8 @@ def Ceate_combox_table(self, ButtonId=None):  # 生成选项卡表格   步骤�
 
             #----------------------------------------------------------------EDA系列
             if ButtonId in ["EDA系列"]:
-                print(self.ftp_serve.Get_file_list("EDA/EDA40/3D"))
-                self.boll_SCcrew = Create_transformer_EDA_series()#建立类
+                self.model_3d_file_list=self.ftp_serve.Get_file_list("EDA/EDA40/3D")
+                self.boll_SCcrew = Create_transformer_EDA_series(self.model_3d_file_list)#建立类
 
 
             all_combox_list = self.boll_SCcrew.Create_combox_list()

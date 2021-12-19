@@ -223,6 +223,7 @@ class Ftp_Update():
             ret = fun(*args, **kwargs)
             end_time = time.time()
             print(end_time - start_time)
+            return ret
         return inner
 
     @deco
@@ -232,7 +233,7 @@ class Ftp_Update():
             res = self.up.getlist(file_path)
             file_lsit=[x["name"] for x in res]
             return file_lsit
-        except:
+        except Exception as e:
             pass
 
 if __name__ == "__main__":
