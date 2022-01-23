@@ -99,14 +99,13 @@ def Create_ProcessBar(self, ButtonId=None):  # 过程处理函数 获取数据�
                 self.Ceate_combox_table(ButtonId)#建立
                 # 将所有的combox 选项和型号槽绑定 只要选项更新就会选项产品参数
                 for i in self.combox_list:
-                    if self.combox_list.index(i)==7:
+                    if self.combox_list.index(i)==10:
                         i.currentTextChanged.connect(self.Ceate_show_3d)#刷新
                         continue
-                    if self.combox_list.index(i)==2:
-                        i.currentTextChanged.connect(self.combox_refresh_function)#根据combox内容刷新combox刷新
-                        continue
                     if self.combox_list.index(i)==1:
-                        i.currentTextChanged.connect(self.show_technical_information)#根据combox内容刷新技术资料
+                        i.currentTextChanged.connect(self.combox_refresh_function)#刷新
+                        i.currentTextChanged.connect(self.show_technical_information)  # 根据combox内容刷新技术资料
+                        continue
                     i.currentTextChanged.connect(self.Ceate_product_parameter_table_and_show_3d)#刷新
                     pass
             self.sinal = 1
@@ -155,8 +154,7 @@ def Ceate_combox_table(self, ButtonId=None):  # 生成选项卡表格   步骤�
 
             #----------------------------------------------------------------EDA系列
             if ButtonId in ["EDA系列"]:
-                self.model_3d_file_list=self.ftp_serve.Get_file_list("EDA/EDA40/3D")
-                self.boll_SCcrew = Create_transformer_EDA_series(self.model_3d_file_list)#建立类
+                self.boll_SCcrew = Create_transformer_EDA_series()#建立类
 
 
             all_combox_list = self.boll_SCcrew.Create_combox_list()
@@ -306,6 +304,26 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
             dict["重量(Kg)"] = self.boll_SCcrew.weight[series_1][series]
             dict["减速机转动惯量(kg.cm2)"] = self.boll_SCcrew.Moment_inertia[series_1][series_2][series]
 
+        elif self.ButtonId in ["EDA系列"]:
+            self.combox_list[10].clear()  # 清除原来的combobox选项
+            series = "EDA"+self.combox_current_text_list[0]  # 机座号
+            Motor_position=self.combox_current_text_list[1]
+            Fixed_mode=self.combox_current_text_list[2]
+            lead="B"+self.combox_current_text_list[3]
+            move_distance="C"+self.combox_current_text_list[4]
+            Reduction_ratio="D"+self.combox_current_text_list[5]
+            power="k"+self.combox_current_text_list[6]
+            #rotate_speed=self.combox_current_text_list[7]
+            #sensor_num=self.combox_current_text_list[8]
+            dict = self.boll_SCcrew.series[str(series)]
+            dict["减速比"]=self.combox_current_text_list[5]
+            series=series+"-"+Motor_position[0]+Fixed_mode[0:2]+"-"+lead+"-"+move_distance+"-"+Reduction_ratio+"-"+power
+            additem_list = ["-",series]
+            self.combox_list[10].addItems(additem_list)  # 根据选项变换combox里的内容
+              # 机座号选型列表
+
+
+
         dict_list = []
         self.tableWidget_2.setRowCount(len(dict) + len(self.combox_list))  # 参数表格设置.
 
@@ -414,7 +432,34 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
             self.tableWidget_2.setCellWidget(self.order_code_position,2,self.copy_buttom)
             self.tableWidget_2.setItem(self.order_code_position, 1, newItem)  # 设置订购码
 
+        if self.ButtonId in ["EDA系列"]:  # 设置订购码
+            try:
+                series = "EDA" + self.combox_current_text_list[0]  # 机座号
+                Motor_position = self.combox_current_text_list[1]
+                Fixed_mode = self.combox_current_text_list[2]
+                lead = "B" + self.combox_current_text_list[3]
+                move_distance = "C" + self.combox_current_text_list[4]
+                Reduction_ratio = "D" + self.combox_current_text_list[5]
+                power = "k" + self.combox_current_text_list[6]
+                # rotate_speed=self.combox_current_text_list[7]
+                # sensor_num=self.combox_current_text_list[8]
+                series = series + "-" + Motor_position[0] + Fixed_mode[0:2] + "-" + lead + "-" + \
+                         move_distance + "-" + Reduction_ratio + "-" + power
+            except Exception as e:
+                pass
+                print(e)
+            newItem = QtWidgets.QTableWidgetItem(series)
+            newItem.setTextAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignCenter)
+            newItem.setBackground(QtGui.QBrush(QtGui.QColor(240, 255, 191)))  # 设置背景颜色
+            newItem.setFont(QFont("微软雅黑", 8, QFont.Black))
+            newItem.setForeground(QBrush(QtGui.QColor(0, 0, 0)))
+            #self.tableWidget_2.setSpan(self.order_code_position, 1, 1, 2)#合并单元格
+            self.copy_buttom=QtWidgets.QPushButton("复制订购码")
+            self.copy_buttom.clicked.connect(partial(order_code_copy, series,self))
+            self.tableWidget_2.setCellWidget(self.order_code_position,2,self.copy_buttom)
+            self.tableWidget_2.setItem(self.order_code_position, 1, newItem)  # 设置订购码
             # ----------显示3D-------------------------------------------------------------------
+            '''
             self.tab_7.repaint()
             try:
                 filenam = self.filename_dict[self.combox_list[2].currentText()]
@@ -425,15 +470,19 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
                 pass
             except:
                 self.statusbar.showMessage("此零件官方未提供3D，生成失败")
-
+            '''
     except Exception as e:
-        print(e)
         pass
 
 def Ceate_show_3d(self, QClor=1, dict={}, start=0, ):#仅更新3D
         #根据combox选项生成产品参数列表
         if self.combox_list[7].currentText() != "-":
-            self.statusbar.showMessage("数据生成中.....")
+            #self.statusbar.showMessage("数据生成中.....")
+            pass
+        if self.ButtonId in ["EDA系列"]:
+            if self.combox_list[10].currentText() != "-":
+                self.statusbar.showMessage("数据生成中.....")
+
         try:
             # ----------------------------------------------清除原有的模型--------------------------
             try:
@@ -446,17 +495,28 @@ def Ceate_show_3d(self, QClor=1, dict={}, start=0, ):#仅更新3D
             # ----------显示3D-------------------------------------------------------------------
             self.tab_7.repaint()
             try:
-                if self.combox_list[7].currentText()!="-":
-                    filenam = self.filename_dict[self.combox_list[7].currentText()]
+                if not self.ButtonId in ["EDA系列"]:
+                    if self.combox_list[7].currentText() != "-":  # 一般情况
+                        filenam = self.filename_dict[self.combox_list[7].currentText()]
+                        filenam = filenam.replace(".\\", "")
+                        self.output_filename = filenam
+                        Show3D(self=self, mode=0, file=filenam)
+                        self.canva._display.Repaint()
+                        self.filename = filenam
+                        self.statusbar.showMessage("数据生成成功")
 
-                    #filenam=filenam.replace(".step","")
-                    #self.aCompound = self.boll_SCcrew.Create_shape(filename=filenam)
-                    filenam=filenam.replace(".\\","")
-                    self.output_filename =filenam
-                    Show3D(self=self,mode=0,file=filenam)
-                    self.canva._display.Repaint()
-                    self.filename=filenam
-                    self.statusbar.showMessage("数据生成成功")
+
+                if self.ButtonId in ["EDA系列"]:
+                    if self.combox_list[10].currentText() != "-":
+                        series = "EDA" + self.combox_current_text_list[0]  # 机座号
+                        filenam = "resource/EDA/"+series+"/"+self.combox_list[10].currentText()+".STEP"
+                        filenam = filenam.replace("/", "\\")
+                        self.output_filename = filenam
+                        Show3D(self=self, mode=0, file=filenam)
+                        self.canva._display.Repaint()
+                        self.filename = filenam
+                        self.statusbar.showMessage("数据生成成功")
+
 
             except:
                 self.statusbar.showMessage("此零件官方未提供3D，生成失败")
@@ -486,11 +546,11 @@ def Show3D(self, mode=0, file=None, aCompound=None):  # 生成3D mode控制显�
                     label, c = shapes_labels_colors[shpt_lbl_color]
                     for e in TopologyExplorer(shpt_lbl_color).solids():
                         self.new_build.Add(self.New_Compound, e)
-                        self.canva._display.DisplayColoredShape(e, color=Quantity_Color(c.Red(),
-                                                                                        c.Green(),
-                                                                                        c.Blue(),
-                                                                                   Quantity_TOC_RGB))
-                    self.aCompound=self.New_Compound
+                    self.canva._display.DisplayColoredShape(shpt_lbl_color, color=Quantity_Color(c.Red(),
+                                                                                    c.Green(),
+                                                                                    c.Blue(),
+                                                                                    Quantity_TOC_RGB))
+                    #self.aCompound=self.New_Compound
             elif mode == 1:
 
                 self.show = self.canva._display.DisplayColoredShape(aCompound, color="WHITE", update=True)
@@ -507,6 +567,28 @@ def combox_refresh_function(self):#根据comcox改变combox
         Reduction_ratio = self.boll_SCcrew.lever[self.combox_list[2].currentText()]
         self.combox_list[3].clear()
         self.combox_list[3].addItems(Reduction_ratio)  # 根据选项变换combox里的内容
+    if self.ButtonId in ["EDA系列"]:
+        try:
+            series = self.combox_list[1].currentText()
+            path = "EDA" + "/EDA" + series + "/3D"
+            self.model_3d_file_list = self.ftp_serve.Get_file_list(path)
+            lead_list, move_distance_list, Reduction_ratio_list, power_list,file_list = self.boll_SCcrew.Get_resourcr_list(
+                self.model_3d_file_list)
+            self.combox_list[4].clear()
+            self.combox_list[4].addItems(lead_list)
+            self.combox_list[5].clear()
+            self.combox_list[5].addItems(move_distance_list)
+            self.combox_list[6].clear()
+            self.combox_list[6].addItems(Reduction_ratio_list)
+            self.combox_list[7].clear()
+            self.combox_list[7].addItems(power_list)
+        except:
+            pass
+
+
+
+
+        #self.combox_list[3].addItems(Reduction_ratio)  # 根据选项变换combox里的内容
 
 
 
@@ -544,11 +626,43 @@ def show_technical_information(self):
         elif series in ["KB280","KB340"]:
             pix_name_1 = "KB-4"
             pix_name_2 = "KB-4"
+    elif ButtonId in ["EDA系列"]:
+        series = "EDA" + self.combox_list[1].currentText()  # 机座号
+        if series in ["EDA40"]:
+            pix_name_1 = "EDA-1"
+            pix_name_2 = "EDA-1"
+        elif series in ["EDA50"]:
+            pix_name_1 = "EDA-1"
+            pix_name_2 = "EDA-1"
+        elif series in ["EDA60"]:
+            pix_name_1 = "EDA-1"
+            pix_name_2 = "EDA-1"
+        elif series in ["EDA75"]:
+            pix_name_1 = "EDA-1"
+            pix_name_2 = "EDA-1"
+        elif series in ["EDA80"]:
+            pix_name_1 = "EDA-1"
+            pix_name_2 = "EDA-1"
+        elif series in ["EDA95"]:
+            pix_name_1 = "EDA-1"
+            pix_name_2 = "EDA-1"
+        elif series in ["EDA110"]:
+            pix_name_1 = "EDA-1"
+            pix_name_2 = "EDA-1"
+        elif series in ["EDA135"]:
+            pix_name_1 = "EDA-1"
+            pix_name_2 = "EDA-1"
+        elif series in ["EDA180"]:
+            pix_name_1 = "EDA-1"
+            pix_name_2 = "EDA-1"
+        elif series in ["EDA220"]:
+            pix_name_1 = "EDA-1"
+            pix_name_2 = "EDA-1"
     # ----------2D显示图片操作 技术资料（1）----------------
     try:
         pix_name = ButtonId  # 2D
         #self.pix = QPixmap('Pic\\' + pix_name + ".PNG")
-        self.graphicsView = GraphicsView(self.pix_dict[ButtonId], self.tab_8)
+        self.graphicsView = GraphicsView(self.pix_dict[series], self.tab_8)
         self.graphicsView.setGeometry(QtCore.QRect(0, 0, 461 * self.width_scal, 581 * self.height_scal))
         self.graphicsView.setObjectName("graphicsView")
         self.graphicsView.scale(0.4, 0.4)  # 显示比例

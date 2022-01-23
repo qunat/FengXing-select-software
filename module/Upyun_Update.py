@@ -65,7 +65,6 @@ class Ftp_Update():
 
 
     def Down_load_file(self,path):
-
         try:
             with open(path, 'wb') as f:
                 filepath=self.cloude_name+"/"+path
@@ -73,6 +72,13 @@ class Ftp_Update():
         except Exception as e:
             print(e)
 
+    def Down_load_part_file(self,path):
+        try:
+            with open(path, 'wb') as f:
+                filepath=self.cloude_name+"/"+path
+                self.up.get(filepath, f)
+        except Exception as e:
+            print(e)
 
     def OutPut_all_file_path(self):
         path=os.getcwd()

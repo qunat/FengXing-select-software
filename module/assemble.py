@@ -197,7 +197,7 @@ def read_step_file_with_names_colors(filename):
             l_c = TDF_LabelSequence()
             shape_tool.GetComponents(lab, l_c)
             for i in range(l_c.Length()):
-                print("loc",i)
+                #print("loc",i)
                 label = l_c.Value(i+1)
                 if shape_tool.IsReference(label):
                     #print("\n########  reference label :", label)
