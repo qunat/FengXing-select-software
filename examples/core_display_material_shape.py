@@ -18,6 +18,7 @@
 ##along with pythonOCC.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+from OCC.Extend.DataExchange import write_step_file, write_iges_file, write_stl_file,read_stl_file
 
 from OCC.Core.Graphic3d import (Graphic3d_NOM_BRASS,
                                 Graphic3d_NOM_BRONZE,
@@ -84,7 +85,8 @@ available_materials = [Graphic3d_NOM_BRASS,
 # Displays a cylinder with a material
 #
 radius = 30
-s = BRepPrimAPI_MakeCylinder(radius, 200).Shape()
+#s = BRepPrimAPI_MakeCylinder(radius, 200).Shape()
+s=read_stl_file("../123.stl")
 delta_x = 0.
 for mat in available_materials:
     s2 = translate_shp(s, gp_Vec(delta_x, 0., 0.))

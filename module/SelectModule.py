@@ -312,7 +312,7 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
             lead="B"+self.combox_current_text_list[3]
             move_distance="C"+self.combox_current_text_list[4]
             Reduction_ratio="D"+self.combox_current_text_list[5]
-            power="k"+self.combox_current_text_list[6]
+            power="K"+self.combox_current_text_list[6]
             #rotate_speed=self.combox_current_text_list[7]
             #sensor_num=self.combox_current_text_list[8]
             dict = self.boll_SCcrew.series[str(series)]
@@ -320,6 +320,7 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
             series=series+"-"+Motor_position[0]+Fixed_mode[0:2]+"-"+lead+"-"+move_distance+"-"+Reduction_ratio+"-"+power
             additem_list = ["-",series]
             self.combox_list[10].addItems(additem_list)  # 根据选项变换combox里的内容
+
               # 机座号选型列表
 
 
@@ -440,7 +441,7 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
                 lead = "B" + self.combox_current_text_list[3]
                 move_distance = "C" + self.combox_current_text_list[4]
                 Reduction_ratio = "D" + self.combox_current_text_list[5]
-                power = "k" + self.combox_current_text_list[6]
+                power = "K" + self.combox_current_text_list[6]
                 # rotate_speed=self.combox_current_text_list[7]
                 # sensor_num=self.combox_current_text_list[8]
                 series = series + "-" + Motor_position[0] + Fixed_mode[0:2] + "-" + lead + "-" + \
@@ -476,12 +477,18 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
 
 def Ceate_show_3d(self, QClor=1, dict={}, start=0, ):#仅更新3D
         #根据combox选项生成产品参数列表
+        print(len(self.file_list))
         if self.combox_list[7].currentText() != "-":
             #self.statusbar.showMessage("数据生成中.....")
             pass
         if self.ButtonId in ["EDA系列"]:
-            if self.combox_list[10].currentText() != "-":
-                self.statusbar.showMessage("数据生成中.....")
+            if self.combox_list[10].currentText() != "-" and self.combox_list[10].currentText()+".STEP" in self.file_list :
+                #self.statusbar.showMessage("数据生成中.....")
+                #判断模型是否在resources中
+                pass
+            else:
+                self.statusbar.showMessage("没有与选项符合的模型")
+
 
         try:
             # ----------------------------------------------清除原有的模型--------------------------
@@ -507,11 +514,21 @@ def Ceate_show_3d(self, QClor=1, dict={}, start=0, ):#仅更新3D
 
 
                 if self.ButtonId in ["EDA系列"]:
-                    if self.combox_list[10].currentText() != "-":
+                    if self.combox_list[10].currentText() != "-" and self.combox_list[10].currentText()+".STEP" in self.file_list:
                         series = "EDA" + self.combox_current_text_list[0]  # 机座号
-                        filenam = "resource/EDA/"+series+"/"+self.combox_list[10].currentText()+".STEP"
+                        filenam = "./resource/EDA/"+series+"/3D/"+self.combox_list[10].currentText()+".STEP"
                         filenam = filenam.replace("/", "\\")
                         self.output_filename = filenam
+                        # 判断模型是否在resources中
+                        if not os.path.exists(self.output_filename):
+                            pass
+                            down_load_path=os.getcwd()+"/resource/EDA/"+series+"/3D/"+self.combox_list[10].currentText()+".STEP"
+                            down_load_path.replace("\\","/")
+                            down_load_file_name="/resource/EDA/"+series+"/3D/"+self.combox_list[10].currentText()+".STEP"
+                            self.ftp_serve.Down_load_part_file(down_load_path,down_load_file_name)
+                            self.statusbar.showMessage("数据下载完成")
+
+                        #显示3D
                         Show3D(self=self, mode=0, file=filenam)
                         self.canva._display.Repaint()
                         self.filename = filenam
@@ -572,7 +589,7 @@ def combox_refresh_function(self):#根据comcox改变combox
             series = self.combox_list[1].currentText()
             path = "EDA" + "/EDA" + series + "/3D"
             self.model_3d_file_list = self.ftp_serve.Get_file_list(path)
-            lead_list, move_distance_list, Reduction_ratio_list, power_list,file_list = self.boll_SCcrew.Get_resourcr_list(
+            lead_list, move_distance_list, Reduction_ratio_list, power_list,self.file_list = self.boll_SCcrew.Get_resourcr_list(
                 self.model_3d_file_list)
             self.combox_list[4].clear()
             self.combox_list[4].addItems(lead_list)

@@ -2,10 +2,10 @@
 import os,sys,shutil
 def OutPut_all_file_path():
     path = os.getcwd()
-    stp_move_to_path="J:\\EBaiduNetdiskDownload\\resource\\3D\\"
-    dwg_move_to_path = "J:\\EBaiduNetdiskDownload\\resource\\EDA40\DWG\\"
+    stp_move_to_path="J:\\EBaiduNetdiskDownload\\resource\\EDA50\\3D\\"
+    dwg_move_to_path = "J:\\EBaiduNetdiskDownload\\resource\\EDA50\DWG\\"
     file_path_list = []
-    path="J:\\EBaiduNetdiskDownload\\EDA40"
+    path="J:\\EBaiduNetdiskDownload\\EDA50"
     with open("FilePath.ini", "w+") as f:
         for dir, folder, file in os.walk(path):
             for i in file:

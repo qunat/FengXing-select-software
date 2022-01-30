@@ -72,10 +72,11 @@ class Ftp_Update():
         except Exception as e:
             print(e)
 
-    def Down_load_part_file(self,path):
+    def Down_load_part_file(self,down_load_path,down_load_file):#下载3D文件
         try:
-            with open(path, 'wb') as f:
-                filepath=self.cloude_name+"/"+path
+            with open(down_load_path, 'wb') as f:
+                filepath=self.cloude_name+"/"+down_load_file
+                print("下载路径",filepath)
                 self.up.get(filepath, f)
         except Exception as e:
             print(e)
