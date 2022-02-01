@@ -533,8 +533,6 @@ def Ceate_show_3d(self, QClor=1, dict={}, start=0, ):#仅更新3D
                         self.canva._display.Repaint()
                         self.filename = filenam
                         self.statusbar.showMessage("数据生成成功")
-
-
             except:
                 self.statusbar.showMessage("此零件官方未提供3D，生成失败")
 
@@ -559,10 +557,12 @@ def Show3D(self, mode=0, file=None, aCompound=None):  # 生成3D mode控制显�
                 shapes_labels_colors = read_step_file_with_names_colors(file)
                 self.statusbar.showMessage("数据生成中请梢后......")
                 self.aCompound=shapes_labels_colors
+                shape_num=len(shapes_labels_colors.keys())
                 for shpt_lbl_color in shapes_labels_colors:
                     label, c = shapes_labels_colors[shpt_lbl_color]
-                    for e in TopologyExplorer(shpt_lbl_color).solids():
-                        self.new_build.Add(self.New_Compound, e)
+                    self.progressBar.Load_part_progressBar(shape_num)
+                    #for e in TopologyExplorer(shpt_lbl_color).solids():
+                        #self.new_build.Add(self.New_Compound, e)
                     self.canva._display.DisplayColoredShape(shpt_lbl_color, color=Quantity_Color(c.Red(),
                                                                                     c.Green(),
                                                                                     c.Blue(),

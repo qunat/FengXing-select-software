@@ -46,6 +46,12 @@ class Ui_MainWindow(MainGui.Ui_MainWindow):
         self.layoutWidget = {}
         self.gridLayout = {}
         self.new_vison = Vision()
+        self.progressBar = MyProgressBar(self)
+        #self.progressBar.setValue(10)
+        #self.statusBar().addPermanentWidget(self.progressBar)
+        # 设置进度条的范围，参数1为最小值，参数2为最大值（可以调得更大，比如1000
+        #self.progressBar.setRange(0, 100)
+        # 设置进度条的初始值
 
         # -------------      actions       -----------------
         self._open_action = self.add_action("打开", "open", "打开", True, self.on_open_file, QKSec.Open)
@@ -631,3 +637,25 @@ class Vision(QtWidgets.QMainWindow, Vision.Ui_Form):
         self.setupUi(self)
         self.label_6.setText("<A href='https://www.aliyuncad.com/'>软件下载：https://www.aliyuncad.com/</a>")
         self.label_6.setOpenExternalLinks(True)
+class MyProgressBar(QProgressBar):
+    def __init__(self,myself):
+        super(MyProgressBar, self).__init__()
+        self.progressBar = QProgressBar(myself)
+        #self.progressBar.setValue(10)
+        self.statusBar=myself.statusBar
+        self.statusBar().addPermanentWidget(self.progressBar)
+        # 设置进度条的范围，参数1为最小值，参数2为最大值（可以调得更大，比如1000
+        self.progressBar.setRange(0, 100)
+        self.value=0
+        # 设置进度条的初始值
+    def Load_part_progressBar(self,shape=None):
+        self.value+=1
+        value=int(self.value/shape*100)
+        self.progressBar.setValue(value)
+        print(value)
+    def Down_load_part_progressBar(self):
+        pass
+    def Value_clear(self):
+        self.value=0
+
+
