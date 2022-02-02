@@ -14,7 +14,8 @@ import copy,time,sys
 from ui import Process_message
 #from module import source
 from multiprocessing import  Queue,Manager
-from module import FuctionModule
+from module import FuctionModule,assemble
+import  threading
 
 
 def test(func):
@@ -485,6 +486,7 @@ def Ceate_show_3d(self, QClor=1, dict={}, start=0, ):#仅更新3D
             if self.combox_list[10].currentText() != "-" and self.combox_list[10].currentText()+".STEP" in self.file_list :
                 #self.statusbar.showMessage("数据生成中.....")
                 #判断模型是否在resources中
+                self.statusbar.showMessage("")
                 pass
             else:
                 self.statusbar.showMessage("没有与选项符合的模型")
@@ -529,8 +531,10 @@ def Ceate_show_3d(self, QClor=1, dict={}, start=0, ):#仅更新3D
                             self.statusbar.showMessage("数据下载完成")
 
                         #显示3D
+                        #t1=threading.Thread(target=Show3D,args=(self,0,filenam,))
+                        #t1.start()
                         Show3D(self=self, mode=0, file=filenam)
-                        self.canva._display.Repaint()
+                        #self.canva._display.Repaint()
                         self.filename = filenam
                         self.statusbar.showMessage("数据生成成功")
             except:
@@ -545,6 +549,7 @@ def Ceate_show_3d(self, QClor=1, dict={}, start=0, ):#仅更新3D
 
 def Show3D(self, mode=0, file=None, aCompound=None):  # 生成3D mode控制显示模式
         try:
+            print("enter")
             self.canva._display.EraseAll()
             self.canva._display.hide_triedron()
             self.canva._display.display_triedron()
@@ -554,10 +559,17 @@ def Show3D(self, mode=0, file=None, aCompound=None):  # 生成3D mode控制显�
             self.new_build.MakeCompound(self.New_Compound)  # 生成一个复合体DopoDS_shape
             if mode == 0:
                 file=os.path.join(os.getcwd(),file)
-                shapes_labels_colors = read_step_file_with_names_colors(file)
+                shapes_labels_colors_list=[]
+                t1=threading.Thread(target=assemble.read_step_file_with_names_colors,args=(self,file,shapes_labels_colors_list,))
+                t1.start()
+                t1.join()
+                print(shapes_labels_colors_list)
+                #shapes_labels_colors =assemble.read_step_file_with_names_colors(self,file)
+                shapes_labels_colors=shapes_labels_colors_list[0]
                 self.statusbar.showMessage("数据生成中请梢后......")
                 self.aCompound=shapes_labels_colors
                 shape_num=len(shapes_labels_colors.keys())
+                #self.progressBar.Add()
                 for shpt_lbl_color in shapes_labels_colors:
                     label, c = shapes_labels_colors[shpt_lbl_color]
                     self.progressBar.Load_part_progressBar(shape_num)
@@ -568,6 +580,8 @@ def Show3D(self, mode=0, file=None, aCompound=None):  # 生成3D mode控制显�
                                                                                     c.Blue(),
                                                                                     Quantity_TOC_RGB))
                     #self.aCompound=self.New_Compound
+                #self.progressBar.Value_clear()
+                self.progressBar.Remove()
             elif mode == 1:
 
                 self.show = self.canva._display.DisplayColoredShape(aCompound, color="WHITE", update=True)
