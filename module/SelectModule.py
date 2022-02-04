@@ -560,16 +560,20 @@ def Show3D(self, mode=0, file=None, aCompound=None):  # 生成3D mode控制显�
             if mode == 0:
                 file=os.path.join(os.getcwd(),file)
                 shapes_labels_colors_list=[]
-                t1=threading.Thread(target=assemble.read_step_file_with_names_colors,args=(self,file,shapes_labels_colors_list,))
-                t1.start()
-                t1.join()
+                t2=threading.Thread(target=assemble.read_step_file_with_names_colors,args=(self,file,shapes_labels_colors_list,))
+                t2.start()
+                t2.join()
                 print(shapes_labels_colors_list)
                 #shapes_labels_colors =assemble.read_step_file_with_names_colors(self,file)
                 shapes_labels_colors=shapes_labels_colors_list[0]
                 self.statusbar.showMessage("数据生成中请梢后......")
                 self.aCompound=shapes_labels_colors
                 shape_num=len(shapes_labels_colors.keys())
-                #self.progressBar.Add()
+                self.progressBar.Show()
+                print("add is ok")
+                #t1=threading.Thread(target=self.progressBar.Load_part_progressBar,args=(shape_num,))
+                #t1.start()
+                #t1.join()
                 for shpt_lbl_color in shapes_labels_colors:
                     label, c = shapes_labels_colors[shpt_lbl_color]
                     self.progressBar.Load_part_progressBar(shape_num)
@@ -580,10 +584,12 @@ def Show3D(self, mode=0, file=None, aCompound=None):  # 生成3D mode控制显�
                                                                                     c.Blue(),
                                                                                     Quantity_TOC_RGB))
                     #self.aCompound=self.New_Compound
-                #self.progressBar.Value_clear()
-                self.progressBar.Remove()
-            elif mode == 1:
 
+
+                self.progressBar.Value_clear()
+                self.progressBar.Hide()
+
+            elif mode == 1:
                 self.show = self.canva._display.DisplayColoredShape(aCompound, color="WHITE", update=True)
             self.canva._display.FitAll()
 

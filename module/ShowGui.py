@@ -643,16 +643,19 @@ class MyProgressBar(QProgressBar):
         self.progressBar = QProgressBar(myself)
         #self.progressBar.setValue(10)
         self.statusBar=myself.statusBar
-        self.Add()
+        self.statusBar().addPermanentWidget(self.progressBar)
         # 设置进度条的范围，参数1为最小值，参数2为最大值（可以调得更大，比如1000
         self.progressBar.setRange(0, 100)
         self.value=0
         # 设置进度条的初始值
     def Load_part_progressBar(self,shape=None):#
-        self.value+=1
+        self.value += 1
         value=int(self.value/shape*100)
         self.progressBar.setValue(value)
         print(value)
+        if value==100:
+            self.Value_clear()
+            print(self.value)
     def Read_part_progressBar(self,shape=None):#
         self.value+=1
         value=int(self.value/shape*100)
@@ -665,8 +668,10 @@ class MyProgressBar(QProgressBar):
         print(value)
     def Value_clear(self):
         self.value=0
-    def Add(self):
-        self.statusBar().addPermanentWidget(self.progressBar)
-    def Remove(self):
-        self.statusBar().removeWidget(self.progressBar)
+    def Show(self):
+        self.progressBar.show()
+        #self.statusBar().addPermanentWidget(self.progressBar)
+    def Hide(self):
+        #self.statusBar().removeWidget(self.progressBar)
+        self.progressBar.hide()
 
