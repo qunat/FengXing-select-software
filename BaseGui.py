@@ -360,6 +360,7 @@ if __name__ == '__main__':
     if not app:  # create QApplication if it doesnt exist
         app = QtWidgets.QApplication(sys.argv)
     # --------------------
+    QApplication.processEvents()
     win = Mywindown()
     win.show()
     win.centerOnScreen()

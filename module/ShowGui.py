@@ -641,26 +641,38 @@ class MyProgressBar(QProgressBar):
     def __init__(self,myself):
         super(MyProgressBar, self).__init__()
         self.progressBar = QProgressBar(myself)
-        #self.progressBar.setValue(10)
+        self.label = QLabel()
+        self.label.setText("正在生成")
         self.statusBar=myself.statusBar
-        self.statusBar().addPermanentWidget(self.progressBar)
+        self.statusBar().addPermanentWidget(self.label)  # 嵌入进度条
+        self.statusBar().addPermanentWidget(self.progressBar)#嵌入进度条
         # 设置进度条的范围，参数1为最小值，参数2为最大值（可以调得更大，比如1000
         self.progressBar.setRange(0, 100)
         self.value=0
         # 设置进度条的初始值
+        self.Hide()
     def Load_part_progressBar(self,shape=None):#
         self.value += 1
         value=int(self.value/shape*100)
         self.progressBar.setValue(value)
-        print(value)
+        #print(value)
         if value==100:
             self.Value_clear()
-            print(self.value)
-    def Read_part_progressBar(self,shape=None):#
-        self.value+=1
-        value=int(self.value/shape*100)
-        self.progressBar.setValue(value)
-        print(value)
+
+    def Read_part_progressBar(self,file=None):#
+        test_filepath="./resource/Test_Model/Test_Model.stp"
+        test_start_time=time.time()
+        shapes_labels_colors = assemble.read_step_file_with_names_colors(self, test_filepath)
+        test_end_time=time.time()
+        file_size=os.lstat(test_filepath).st_size/1024#单位KB
+        read_speed=file_size/(test_end_time-test_start_time)#单位KB/S
+        #计算加载时间
+        file_size=os.lstat(file).st_size/1024#单位KB
+        read_tiem=file_size/read_speed
+        print(read_tiem)
+        #value=int(self.value/shape*100)
+        #self.progressBar.setValue(value)
+        #print(value)
     def Down_load_part_progressBar(self,shape=None):
         self.value += 1
         value = int(self.value / shape * 100)
@@ -670,8 +682,13 @@ class MyProgressBar(QProgressBar):
         self.value=0
     def Show(self):
         self.progressBar.show()
+        self.label.show()
         #self.statusBar().addPermanentWidget(self.progressBar)
     def Hide(self):
         #self.statusBar().removeWidget(self.progressBar)
         self.progressBar.hide()
+        self.label.hide()
+    def Refresh_gui(self):
+        while True:
+            QApplication.processEvents()
 

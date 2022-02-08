@@ -16,7 +16,7 @@
 ##along with pythonOCC.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-
+from PyQt5.QtWidgets import QApplication, QComboBox, QTableView
 from OCC.Core.TopoDS import TopoDS_Shape
 from OCC.Core.BRepMesh import BRepMesh_IncrementalMesh
 from OCC.Core.StlAPI import stlapi_Read, StlAPI_Writer
@@ -391,6 +391,7 @@ def read_step_file_with_names_colors(self,filename,output_shapes_list=[]):
         name = lab.GetLabelName()
         #print("Name :", name)
         #self.statusbar.showMessage(name)
+        self.QApplication.processEvents()
         if shape_tool.IsAssembly(lab):
             l_c = TDF_LabelSequence()
             shape_tool.GetComponents(lab, l_c)

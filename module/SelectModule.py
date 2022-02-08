@@ -549,7 +549,7 @@ def Ceate_show_3d(self, QClor=1, dict={}, start=0, ):#仅更新3D
 
 def Show3D(self, mode=0, file=None, aCompound=None):  # 生成3D mode控制显示模式
         try:
-            print("enter")
+            self.statusbar.showMessage("数据生成中请梢后......")
             self.canva._display.EraseAll()
             self.canva._display.hide_triedron()
             self.canva._display.display_triedron()
@@ -557,26 +557,30 @@ def Show3D(self, mode=0, file=None, aCompound=None):  # 生成3D mode控制显�
             self.new_build = TopoDS_Builder()  # 建立一个TopoDS_Builder()
             self.New_Compound = TopoDS_Compound()  # 定义一个复合体
             self.new_build.MakeCompound(self.New_Compound)  # 生成一个复合体DopoDS_shape
+            self.QApplication=QApplication
             if mode == 0:
                 file=os.path.join(os.getcwd(),file)
                 shapes_labels_colors_list=[]
-                t2=threading.Thread(target=assemble.read_step_file_with_names_colors,args=(self,file,shapes_labels_colors_list,))
-                t2.start()
-                t2.join()
-                print(shapes_labels_colors_list)
+                #self.statusbar.showMessage("数据读取中请梢后......")
+                t1=threading.Thread(target=assemble.read_step_file_with_names_colors,args=(self,file,shapes_labels_colors_list))
+                t1.start()
                 #shapes_labels_colors =assemble.read_step_file_with_names_colors(self,file)
+                while True:
+                    QApplication.processEvents()
+                    if len(shapes_labels_colors_list)!=0:
+                        break
                 shapes_labels_colors=shapes_labels_colors_list[0]
+
+
+
                 self.statusbar.showMessage("数据生成中请梢后......")
                 self.aCompound=shapes_labels_colors
                 shape_num=len(shapes_labels_colors.keys())
                 self.progressBar.Show()
-                print("add is ok")
-                #t1=threading.Thread(target=self.progressBar.Load_part_progressBar,args=(shape_num,))
-                #t1.start()
-                #t1.join()
                 for shpt_lbl_color in shapes_labels_colors:
                     label, c = shapes_labels_colors[shpt_lbl_color]
                     self.progressBar.Load_part_progressBar(shape_num)
+                    QApplication.processEvents()
                     #for e in TopologyExplorer(shpt_lbl_color).solids():
                         #self.new_build.Add(self.New_Compound, e)
                     self.canva._display.DisplayColoredShape(shpt_lbl_color, color=Quantity_Color(c.Red(),

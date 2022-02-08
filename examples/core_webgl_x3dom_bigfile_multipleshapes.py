@@ -20,24 +20,25 @@
 import os
 import sys
 
-from OCC.Extend.DataExchange import read_step_file
+from OCC.Extend.DataExchange import read_step_file,read_step_file_with_names_colors
 from OCC.Extend.TopologyUtils import TopologyExplorer
 from OCC.Display.WebGl import x3dom_renderer
 
 # opens a big step file
 # render each part of the assembly as a shape
-stp_file = os.path.join('..', 'assets', 'models', '3864470050F1.stp')
+stp_file = "2.stp"
 if not os.path.isfile(stp_file):
 	print("File 3864470050F1.stp not found. First unzip 3864470050F1.zip file from the assets folder")
 	sys.exit(0)
 
 # file exist, we can load the file
-big_shp = read_step_file(stp_file)
+big_shp = read_step_file_with_names_colors(stp_file)
+print("read is ok")
 
-all_subshapes = TopologyExplorer(big_shp).solids()
+#all_subshapes = TopologyExplorer(big_shp).solids()
 
 my_renderer = x3dom_renderer.X3DomRenderer()
-for single_shape in all_subshapes:
+for single_shape in big_shp:
 	my_renderer.DisplayShape(single_shape)
 # then call the renderer
 my_renderer.render()
