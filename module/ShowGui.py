@@ -666,14 +666,26 @@ class MyProgressBar(QProgressBar):
         test_end_time=time.time()
         file_size=os.lstat(test_filepath).st_size/1024#单位KB
         read_speed=file_size/(test_end_time-test_start_time)#单位KB/S
+        print("文件大小",file_size,"读取时间",(test_end_time-test_start_time),"读取速度",read_speed)
         #计算加载时间
         file_size=os.lstat(file).st_size/1024#单位KB
-        read_tiem=file_size/read_speed
-        print(read_tiem)
-        #value=int(self.value/shape*100)
-        #self.progressBar.setValue(value)
-        #print(value)
-    def Down_load_part_progressBar(self,shape=None):
+        read_time=math.ceil(file_size/read_speed)
+        print(666,read_time)
+        sleep_time=0
+        self.Show()
+        while True:
+            time.sleep(0.5)
+            sleep_time+=0.5
+            if sleep_time>read_time:
+                self.Hide()
+                break
+            else:
+                value = int(sleep_time / read_time * 100)
+                print(value)
+                self.progressBar.setValue(value)
+
+
+    def Down_load_part_progressBar(self,file=None):
         self.value += 1
         value = int(self.value / shape * 100)
         self.progressBar.setValue(value)

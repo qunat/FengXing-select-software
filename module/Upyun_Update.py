@@ -80,6 +80,11 @@ class Ftp_Update():
                 self.up.get(filepath, f)
         except Exception as e:
             print(e)
+    def Get_file_size(self,down_load_file):
+        filepath = self.cloude_name + "/" + down_load_file
+        res=self.up.getinfo(filepath)
+        return res['file-size']
+
 
     def OutPut_all_file_path(self):
         path=os.getcwd()

@@ -391,7 +391,7 @@ def read_step_file_with_names_colors(self,filename,output_shapes_list=[]):
         name = lab.GetLabelName()
         #print("Name :", name)
         #self.statusbar.showMessage(name)
-        self.QApplication.processEvents()
+        #self.QApplication.processEvents()
         if shape_tool.IsAssembly(lab):
             l_c = TDF_LabelSequence()
             shape_tool.GetComponents(lab, l_c)

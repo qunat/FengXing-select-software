@@ -523,16 +523,22 @@ def Ceate_show_3d(self, QClor=1, dict={}, start=0, ):#仅更新3D
                         self.output_filename = filenam
                         # 判断模型是否在resources中
                         if not os.path.exists(self.output_filename):
-                            pass
+                            QApplication.processEvents()
                             down_load_path=os.getcwd()+"/resource/EDA/"+series+"/3D/"+self.combox_list[10].currentText()+".STEP"
                             down_load_path.replace("\\","/")
-                            down_load_file_name="/resource/EDA/"+series+"/3D/"+self.combox_list[10].currentText()+".STEP"
-                            self.ftp_serve.Down_load_part_file(down_load_path,down_load_file_name)
+                            down_load_file_name="resource/EDA/"+series+"/3D/"+self.combox_list[10].currentText()+".STEP"
+                            #self.ftp_serve.Down_load_part_file(down_load_path,down_load_file_name)
+                            file_size=self.ftp_serve.Get_file_size(down_load_file_name)
+                            t=threading.Thread(target=self.ftp_serve.Down_load_part_file,args=(down_load_path,down_load_file_name,))
+                            t.start()
+                            self.statusbar.showMessage("数据下载中......")
+                            while True:
+                                QApplication.processEvents()
+                                if file_size==str(os.lstat(self.output_filename).st_size):
+                                    break
                             self.statusbar.showMessage("数据下载完成")
 
                         #显示3D
-                        #t1=threading.Thread(target=Show3D,args=(self,0,filenam,))
-                        #t1.start()
                         Show3D(self=self, mode=0, file=filenam)
                         #self.canva._display.Repaint()
                         self.filename = filenam
@@ -549,7 +555,7 @@ def Ceate_show_3d(self, QClor=1, dict={}, start=0, ):#仅更新3D
 
 def Show3D(self, mode=0, file=None, aCompound=None):  # 生成3D mode控制显示模式
         try:
-            self.statusbar.showMessage("数据生成中请梢后......")
+
             self.canva._display.EraseAll()
             self.canva._display.hide_triedron()
             self.canva._display.display_triedron()
@@ -561,10 +567,9 @@ def Show3D(self, mode=0, file=None, aCompound=None):  # 生成3D mode控制显�
             if mode == 0:
                 file=os.path.join(os.getcwd(),file)
                 shapes_labels_colors_list=[]
-                #self.statusbar.showMessage("数据读取中请梢后......")
-                t1=threading.Thread(target=assemble.read_step_file_with_names_colors,args=(self,file,shapes_labels_colors_list))
+                self.statusbar.showMessage("数据生成中请梢后......")
+                t1=threading.Thread(target=assemble.read_step_file_with_names_colors,args=(self,file,shapes_labels_colors_list,))
                 t1.start()
-                #shapes_labels_colors =assemble.read_step_file_with_names_colors(self,file)
                 while True:
                     QApplication.processEvents()
                     if len(shapes_labels_colors_list)!=0:
