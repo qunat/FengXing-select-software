@@ -685,11 +685,9 @@ class MyProgressBar(QProgressBar):
                 self.progressBar.setValue(value)
 
 
-    def Down_load_part_progressBar(self,file=None):
-        self.value += 1
-        value = int(self.value / shape * 100)
+    def Down_load_part_progressBar(self,file_size,now_file_size):
+        value = int(float(now_file_size) / float(file_size)*100)
         self.progressBar.setValue(value)
-        print(value)
     def Value_clear(self):
         self.value=0
     def Show(self):

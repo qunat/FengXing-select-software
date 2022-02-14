@@ -108,6 +108,19 @@ def Create_ProcessBar(self, ButtonId=None):  # 过程处理函数 获取数据�
                         i.currentTextChanged.connect(self.show_technical_information)  # 根据combox内容刷新技术资料
                         continue
                     i.currentTextChanged.connect(self.Ceate_product_parameter_table_and_show_3d)#刷新
+            elif ButtonId in ["ECA系列"] :
+                self.ButtonId = ButtonId
+                self.Ceate_combox_table(ButtonId)#建立
+                # 将所有的combox 选项和型号槽绑定 只要选项更新就会选项产品参数
+                for i in self.combox_list:
+                    if self.combox_list.index(i)==10:
+                        i.currentTextChanged.connect(self.Ceate_show_3d)#刷新
+                        continue
+                    if self.combox_list.index(i)==1:
+                        i.currentTextChanged.connect(self.combox_refresh_function)#刷新
+                        i.currentTextChanged.connect(self.show_technical_information)  # 根据combox内容刷新技术资料
+                        continue
+                    i.currentTextChanged.connect(self.Ceate_product_parameter_table_and_show_3d)#刷新
                     pass
             self.sinal = 1
             self.message.process_message_show()
@@ -156,6 +169,9 @@ def Ceate_combox_table(self, ButtonId=None):  # 生成选项卡表格   步骤�
             #----------------------------------------------------------------EDA系列
             if ButtonId in ["EDA系列"]:
                 self.boll_SCcrew = Create_transformer_EDA_series()#建立类
+            # ----------------------------------------------------------------ECA系列
+            if ButtonId in ["ECA系列"]:
+                self.boll_SCcrew = Create_transformer_ECA_series()# 建立类
 
 
             all_combox_list = self.boll_SCcrew.Create_combox_list()
@@ -321,8 +337,16 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
             series=series+"-"+Motor_position[0]+Fixed_mode[0:2]+"-"+lead+"-"+move_distance+"-"+Reduction_ratio+"-"+power
             additem_list = ["-",series]
             self.combox_list[10].addItems(additem_list)  # 根据选项变换combox里的内容
-
-              # 机座号选型列表
+            #机座号选型列表
+        elif self.ButtonId in ["ECA系列"]:
+            print("enter")
+            self.combox_list[9].clear()  # 清除原来的combobox选项
+            series = self.combox_current_text_list[0]  # 机座号
+            dict = self.boll_SCcrew.series[str(series)]
+            dict["减速比"]=self.combox_current_text_list[5]
+            additem_list = ["-",series]
+            self.combox_list[10].addItems(additem_list)  # 根据选项变换combox里的内容
+            #机座号选型列表
 
 
 
@@ -478,7 +502,6 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
 
 def Ceate_show_3d(self, QClor=1, dict={}, start=0, ):#仅更新3D
         #根据combox选项生成产品参数列表
-        print(len(self.file_list))
         if self.combox_list[7].currentText() != "-":
             #self.statusbar.showMessage("数据生成中.....")
             pass
@@ -532,10 +555,15 @@ def Ceate_show_3d(self, QClor=1, dict={}, start=0, ):#仅更新3D
                             t=threading.Thread(target=self.ftp_serve.Down_load_part_file,args=(down_load_path,down_load_file_name,))
                             t.start()
                             self.statusbar.showMessage("数据下载中......")
+                            self.progressBar.label.setText("下载中")
+                            self.progressBar.Show()
                             while True:
                                 QApplication.processEvents()
+                                now_file_size=os.lstat(self.output_filename).st_size
+                                self.progressBar.Down_load_part_progressBar(file_size,now_file_size)
                                 if file_size==str(os.lstat(self.output_filename).st_size):
                                     break
+                            self.progressBar.Hide()
                             self.statusbar.showMessage("数据下载完成")
 
                         #显示3D
@@ -570,6 +598,7 @@ def Show3D(self, mode=0, file=None, aCompound=None):  # 生成3D mode控制显�
                 self.statusbar.showMessage("数据生成中请梢后......")
                 t1=threading.Thread(target=assemble.read_step_file_with_names_colors,args=(self,file,shapes_labels_colors_list,))
                 t1.start()
+                self.progressBar.label.setText("正在生成")
                 while True:
                     QApplication.processEvents()
                     if len(shapes_labels_colors_list)!=0:
@@ -769,14 +798,17 @@ def Create_pix_naime_dict_fun(pix_name,return_queue):
 
 
 def Create_pix_name_dict(self,path=".\\Pic"):#--------------------------------------------------- 资料图片加载
-
+    def threading_load_pic(pix_name=""):
+        #start_time=time.time()
+        self.pix_dict[pix_name]=QPixmap("./"+'Pic/' + pix_name + ".png")
+        #end_time=time.time()
+        #print(pix_name,start_time,end_time)
     try:
         self.pix_dict = {}
         index=0
-        all_number=0
-        compplete_percent=0
         pix_list=[]
         start_time = time.time()
+        t={}#线程字典
         for root, dirs, files in os.walk(".\\Pic", topdown=False):
             if root == ".\\Pic":
                 all_number=len(files)
@@ -785,7 +817,9 @@ def Create_pix_name_dict(self,path=".\\Pic"):#----------------------------------
                         continue
                     pix_name = i.replace(".png", "")
                     pix_list.append(pix_name)
-                    self.pix_dict[pix_name] = QPixmap("./"+'Pic/' + pix_name + ".png")
+                    #self.pix_dict[pix_name] = QPixmap("./"+'Pic/' + pix_name + ".png")
+                    t[i]=threading.Thread(target=threading_load_pic,args=(pix_name,))
+                    t[i].start()
                     index+=1
                     compplete_percent=str(int(index/all_number*100))+"%"
                     self.splash.showMessage("资源加载中:"+compplete_percent+"  "+i)

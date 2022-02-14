@@ -7,6 +7,7 @@ from functools import partial
 from OCC.Display.OCCViewer import OffscreenRenderer
 from OCC.Display.backend import load_backend, get_qt_modules
 from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtCore import  Qt
 from module import  Process_message_word,SelectModule,FuctionModule
 from module.CreateParameter import *
 from PyQt5.QtCore import pyqtSignal
@@ -52,7 +53,8 @@ if os.getenv("PYTHONOCC_OFFSCREEN_RENDERER") == "1":
 used_backend = load_backend(backend_str)
 #log.info("GUI backend set to: %s", used_backend)
 # ------------------------------------------------------------初始化结束
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtGui import QIcon, QPixmap, QCursor
+
 QtCore, QtGui, QtWidgets, QtOpenGL = get_qt_modules()
 from PyQt5.QtWidgets import QApplication
 import sys
@@ -101,6 +103,7 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         self.process_message_word = Process_message_word()
         self.new_AboutDownload = AboutDownload()
         #self.mouse = Controller()
+        #self.setCursor(QCursor(Qt.PointingHandCursor))
         self.centerOnScreen()
         self.changeEvent_signal=0#白屏信号
 

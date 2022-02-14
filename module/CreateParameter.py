@@ -1584,3 +1584,97 @@ class Create_transformer_EDA_series(Create_Speed_reducer_kbr_series_1to1):#
             return lead_list,move_distance_list,Reduction_ratio_list,power_list,self.file_list
         except Exception as e:
             print(e)
+class Create_transformer_ECA_series(Create_transformer_EDA_series):#
+    def __init__(self):
+        self.parameter = {}
+        #-----------------------------------------------------------------------------------------
+        self.Repeatability={"螺纹丝杠":"标准螺母：±0.05mm","滚珠丝杠":"标准螺母：±0.01mm"}# 重复精度
+        self.Lead_code={"螺纹丝杠":{"AH":"1","AE":"3","AB":"6.35"},"滚珠丝杠":{"AG":"2","BG":6}}#导程代码
+        self.Motor={"LE11HS3P4095":{"AH":{"最高速度(mm/s)":"10","最大推力(KG)":"5"},
+                                    "AE":{"最高速度(mm/s)":"3","最大推力(KG)":"30"},
+                                    "AB":{"最高速度(mm/s)":"6.35","最大推力(KG)":"63.5"},
+                                    "AG":{"最高速度(mm/s)":"20","最大推力(KG)":"6"},
+                                    "BG":{"最高速度(mm/s)":"60","最大推力(KG)":"2"}},
+                    "AM11RS2DMA": {"AH": {"最高速度(mm/s)": "20", "最大推力(KG)": "3"},
+                                     "AE": {"最高速度(mm/s)": "60", "最大推力(KG)": "1.5"},
+                                     "AB": {"最高速度(mm/s)": "127", "最大推力(KG)": "1"},
+                                     "AG": {"最高速度(mm/s)": "40", "最大推力(KG)": "6"},
+                                     "BG": {"最高速度(mm/s)": "120", "最大推力(KG)": "1.5"}}
+                    }#电机转速推力
+        self.parameter["MLT28"]=[self.Repeatability,self.Lead_code,self.Motor]
+        #---------------------------------------------------------------------------------------------
+        self.Repeatability = {"螺纹丝杠": "标准螺母：±0.05mm", "滚珠丝杠": "标准螺母：±0.01mm"}  # 重复精度
+        self.Lead_code = {"螺纹丝杠": {"CG": "1.25", "AR": "4", "BH": "8","BX":"10.5"}, "滚珠丝杠": {"AG": "2", "BG": "8"}}  # 导程代码
+        self.Motor = {"LE17HD2P4200": {"CG": {"最高速度(mm/s)": "12.5", "最大推力(KG)": "10"},
+                                       "AR": {"最高速度(mm/s)": "40", "最大推力(KG)": "10"},
+                                       "BH": {"最高速度(mm/s)": "80", "最大推力(KG)": "7"},
+                                       "BX": {"最高速度(mm/s)": "105", "最大推力(KG)": "5"},
+                                       "AG": {"最高速度(mm/s)": "20", "最大推力(KG)": "10"},
+                                       "BH": {"最高速度(mm/s)": "80", "最大推力(KG)": "10"}},
+                      "AM17RS2DMA": {"CG": {"最高速度(mm/s)": "25", "最大推力(KG)": "10"},
+                                       "AR": {"最高速度(mm/s)": "80", "最大推力(KG)": "10"},
+                                       "BH": {"最高速度(mm/s)": "160", "最大推力(KG)": "6"},
+                                       "BX": {"最高速度(mm/s)": "210", "最大推力(KG)": "4.5"},
+                                       "AG": {"最高速度(mm/s)": "20", "最大推力(KG)": "10"},
+                                       "BH": {"最高速度(mm/s)": "160", "最大推力(KG)": "5"}}
+                      }  # 电机转速推力
+        self.parameter["MLT42"] = [self.Repeatability, self.Lead_code, self.Motor]
+
+        self.MLT28_dict = {"技术参数":"",'最大行程(mm)': '150', '丝杠类型': '', '重复精度(mm)': '', '导程代码': '',"导程":" ",
+                           '最高速度(mm/s)':"","最大推力":""
+                            }  #
+        self.MLT42_dict = {"技术参数": "", '最大行程(mm)': '200', '丝杠类型': '', '重复精度(mm)': '', '导程代码': '', "导程": " ",
+                           '最高速度(mm/s)': "", "最大推力": ""
+                           }  #
+
+
+        self.ECA_series_dict = {"MLT28":self.MLT28_dict,"MLT42":self.MLT42_dict
+                                }
+        self.series = self.ECA_series_dict
+    def Create_combox_list(self):
+        combox_list = []  # 单个选型的列,
+        all_combox_list = []  # 所有不同选项的列表
+        for i in self.series.keys():
+            combox_list.append(i.replace("ECA",""))
+        combox_list.insert(0, "  ")#
+
+        all_combox_list.append(["机型代号", "ECA"])
+        dict_combox = {"适配电机": combox_list}  #
+        all_combox_list.append(dict_combox)  # 机型代号
+        all_combox_list.append({"电机型号": [" ","3D2:LE11HS3P4095","2D1:AM11RS2DMA","3A1:LE17HD2P4200","2A1:AM17RS2DMA"]})
+        all_combox_list.append({"电机附加项号": [" ","0:无","B:制动器","E:编码器"]})
+        all_combox_list.append({"引出线方向": [" ","T:朝上","B:朝下","L:朝左","R:朝右"]})
+        all_combox_list.append({"丝杠类型": [" ","L:螺纹丝杠","B:滚珠丝杠"]})
+        all_combox_list.append({"适配丝杠": [" ","1:螺纹丝杠","3:滚至丝杠"]})
+        all_combox_list.append({"有效行程": [""]})
+        all_combox_list.append({"定制类型": [" ","0:标准代码","XX:特殊定制代码"]})
+        all_combox_list.append({"可选模型": ["-"]})
+        all_combox_list.append(["订购码", "-"])
+
+        return all_combox_list
+    def Get_resourcr_list(self,file_list="EDA/EDA40/3D"):
+        try:
+            self.file_list = file_list
+            move_distance_list=[""]#行程
+            lead_list=[""]#导程
+            Reduction_ratio_list=[""]#减速比
+            power_list=[""]#功率
+            for file_name in self.file_list:
+                file_name=file_name.split(".")
+                file_name=file_name[0].split("-")
+                file_name[2]=file_name[2].replace("B","")
+                file_name[3]=file_name[3].replace("C", "")
+                file_name[4]=file_name[4].replace("D", "")
+                file_name[5]=file_name[5].replace("K", "")
+                if not file_name[2] in lead_list:
+                    lead_list.append(file_name[2])
+                if not file_name[3] in move_distance_list:
+                    move_distance_list.append(file_name[3])
+                if not file_name[4] in Reduction_ratio_list:
+                    Reduction_ratio_list.append(file_name[4])
+                if not file_name[5] in power_list:
+                    power_list.append(file_name[5])
+
+            return lead_list,move_distance_list,Reduction_ratio_list,power_list,self.file_list
+        except Exception as e:
+            print(e)
