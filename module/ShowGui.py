@@ -69,6 +69,7 @@ class Ui_MainWindow(MainGui.Ui_MainWindow):
         self.actionView_Rear = self.add_action("后视图", "view-rear", "后视图", True, self.View_Rear)
         self.actionView_Iso= self.add_action("轴测图","view-isometric","轴测图",True,self.View_Iso)
         self.action_Fitall= self.add_action("全显","zoom-all","全显",True,self.View_fitall)
+        #self.action_Export_Solidworks = self.add_action("导出至Solidworks", "Std_Export", "导出STP", True,partial(Output_stp_data, self=self))
         self.action_Export_STP = self.add_action("导出STP", "Std_Export", "导出STP", True,partial(Output_stp_data,self=self))
         self.action_Export_IGES = self.add_action("导出IGES", "Std_Export", "导出IGES", True, partial(Output_iges_data,self=self))
         self.action_Export_STL = self.add_action("导出STL", "Std_Export", "导出STL", True,partial(Output_stl_data,self=self))
@@ -620,6 +621,7 @@ class Ui_MainWindow(MainGui.Ui_MainWindow):
         # ------导出数据----------------------------------
         fix_tab = self._ribbon.add_ribbon_tab("导出数据")
         fix_panel = fix_tab.add_ribbon_pane("导出数据")
+        #fix_panel.add_ribbon_widget(RibbonButton(self, self.action_Export_Solidworks, True))
         fix_panel.add_ribbon_widget(RibbonButton(self, self.action_Export_STP, True))
         fix_panel.add_ribbon_widget(RibbonButton(self, self.action_Export_IGES, True))
         fix_panel.add_ribbon_widget(RibbonButton(self, self.action_Export_STL, True))

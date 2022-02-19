@@ -16,6 +16,7 @@ from ui import Process_message
 from multiprocessing import  Queue,Manager
 from module import FuctionModule,assemble
 import  threading
+from module import SolidworksModule
 
 
 def test(func):
@@ -406,7 +407,7 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
         except:
             pass
 
-        # -----------------设置订购码------------------------------------------------------
+        # -----------------设置订购码/导出solidworks按钮----------------------------------------------------------------
         if self.ButtonId in ["KS系列(孔输出)", "KS系列(孔输出法兰)", "KS系列(轴输出)", "KS系列(轴输出法兰)"]:  # 设置订购码
             try:
                 series ="KS"+self.combox_list[1].currentText() + "-"  # 系列号和机座代号
@@ -426,6 +427,12 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
             newItem.setFont(QFont("微软雅黑", 8, QFont.Black))
             newItem.setForeground(QBrush(QtGui.QColor(0, 0, 0)))
             #self.tableWidget_2.setSpan(self.order_code_position, 1, 1, 2)#合并单元格
+            #-----------------------------------------------------------------导入solidworks按钮
+            self.out_put_solidworks_buttom = QtWidgets.QPushButton("导出至Solidworks")
+            self.out_put_solidworks_buttom.clicked.connect(partial(Out_put_solidworks,self.solidworks_import_fiiepath,self))
+            self.tableWidget_2.setCellWidget(self.order_code_position-1, 2, self.out_put_solidworks_buttom)
+            self.tableWidget_2.setItem(self.order_code_position-1, 1, newItem)  # 设置导出按钮
+            #-----------------------------------------------------------------------------------
             self.copy_buttom = QtWidgets.QPushButton("复制订购码")
             self.copy_buttom.clicked.connect(partial(order_code_copy, series,self))
             self.tableWidget_2.setCellWidget(self.order_code_position, 2, self.copy_buttom)
@@ -453,6 +460,12 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
             newItem.setFont(QFont("微软雅黑", 8, QFont.Black))
             newItem.setForeground(QBrush(QtGui.QColor(0, 0, 0)))
             #self.tableWidget_2.setSpan(self.order_code_position, 1, 1, 2)#合并单元格
+            # -----------------------------------------------------------------导入solidworks按钮
+            self.out_put_solidworks_buttom = QtWidgets.QPushButton("导出至Solidworks")
+            self.out_put_solidworks_buttom.clicked.connect(partial(Out_put_solidworks,self.solidworks_import_fiiepath,self))
+            self.tableWidget_2.setCellWidget(self.order_code_position - 1, 2, self.out_put_solidworks_buttom)
+            self.tableWidget_2.setItem(self.order_code_position - 1, 1, newItem)  # 设置导出按钮
+            #--------------------------------------------------------------------------------------------------
             self.copy_buttom=QtWidgets.QPushButton("复制订购码")
             self.copy_buttom.clicked.connect(partial(order_code_copy, series,self))
             self.tableWidget_2.setCellWidget(self.order_code_position,2,self.copy_buttom)
@@ -480,6 +493,12 @@ def Create_product_parameter_table_and_show_3d(self, QClor=1, dict={}, start=0):
             newItem.setFont(QFont("微软雅黑", 8, QFont.Black))
             newItem.setForeground(QBrush(QtGui.QColor(0, 0, 0)))
             #self.tableWidget_2.setSpan(self.order_code_position, 1, 1, 2)#合并单元格
+            # -----------------------------------------------------------------导入solidworks按钮
+            self.out_put_solidworks_buttom = QtWidgets.QPushButton("导出至Solidworks")
+            self.out_put_solidworks_buttom.clicked.connect(partial(Out_put_solidworks,self))
+            self.tableWidget_2.setCellWidget(self.order_code_position - 1, 2, self.out_put_solidworks_buttom)
+            self.tableWidget_2.setItem(self.order_code_position - 1, 1, newItem)  # 设置导出按钮
+            #-----------------------------------------------------------------------------------------
             self.copy_buttom=QtWidgets.QPushButton("复制订购码")
             self.copy_buttom.clicked.connect(partial(order_code_copy, series,self))
             self.tableWidget_2.setCellWidget(self.order_code_position,2,self.copy_buttom)
@@ -593,7 +612,7 @@ def Show3D(self, mode=0, file=None, aCompound=None):  # 生成3D mode控制显�
             self.new_build.MakeCompound(self.New_Compound)  # 生成一个复合体DopoDS_shape
             self.QApplication=QApplication
             if mode == 0:
-                file=os.path.join(os.getcwd(),file)
+                #file=os.path.join(os.getcwd(),file)
                 shapes_labels_colors_list=[]
                 self.statusbar.showMessage("数据生成中请梢后......")
                 t1=threading.Thread(target=assemble.read_step_file_with_names_colors,args=(self,file,shapes_labels_colors_list,))
@@ -622,8 +641,9 @@ def Show3D(self, mode=0, file=None, aCompound=None):  # 生成3D mode控制显�
                                                                                     c.Blue(),
                                                                                     Quantity_TOC_RGB))
                     #self.aCompound=self.New_Compound
-
-
+                print(self.solidworks_import_fiiepath)
+                self.solidworks_import_fiiepath=file
+                print(888888,self.solidworks_import_fiiepath)
                 self.progressBar.Value_clear()
                 self.progressBar.Hide()
 
@@ -849,4 +869,14 @@ def order_code_copy(series,self):
     clipboard = QApplication.clipboard()
     clipboard.setText(series)
     self.statusbar.showMessage("复制成功")
+def Out_put_solidworks(self):
+    try:
+        print("enter", self.solidworks_import_fiiepath)
+        solidworks_api=SolidworksModule.Solidworks_API()
+        self.statusbar.showMessage("Solidworks链接成功")
+        print("enter",self.solidworks_import_fiiepath)
+        solidworks_api.Import_part(filepath=self.solidworks_import_fiiepath)
+    except:
+        self.statusbar.showMessage("导出失败")
+    self.statusbar.showMessage("导出成功")
 

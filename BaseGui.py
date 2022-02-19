@@ -106,6 +106,7 @@ class Mywindown(QtWidgets.QMainWindow, ShowGui.Ui_MainWindow,MainGui.Ui_MainWind
         #self.setCursor(QCursor(Qt.PointingHandCursor))
         self.centerOnScreen()
         self.changeEvent_signal=0#白屏信号
+        self.solidworks_import_fiiepath=r" 99999999"
 
         # ----------------------------------------------------------------------------------
         self.sinal = 0
